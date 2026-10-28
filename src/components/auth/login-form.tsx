@@ -21,6 +21,8 @@ type FormValues = { email: string; password: string };
 
 // O link por e-mail só funciona com SMTP próprio (domínio verificado). Ligue com NEXT_PUBLIC_MAGIC_LINK=true.
 const MAGIC_LINK = process.env.NEXT_PUBLIC_MAGIC_LINK === "true";
+// O botão do Facebook só aparece depois de configurar o provedor no Supabase. Ligue com NEXT_PUBLIC_FACEBOOK_LOGIN=true.
+const FACEBOOK_LOGIN = process.env.NEXT_PUBLIC_FACEBOOK_LOGIN === "true";
 
 function FacebookIcon() {
   return (
@@ -183,7 +185,7 @@ export function LoginForm({
         <h1 className="font-display text-[46px] uppercase leading-[0.98]">
           Que bom ter você <span className="text-primary">aqui.</span>
         </h1>
-        <p className="text-base font-medium leading-relaxed">Entre com e-mail e senha, ou continue com o Google ou o Facebook.</p>
+        <p className="text-base font-medium leading-relaxed">Entre com e-mail e senha, ou continue com o Google.</p>
       </div>
 
       {error && <Alert variant="destructive">{error}</Alert>}
@@ -237,10 +239,12 @@ export function LoginForm({
             <GoogleIcon />
             Continuar com Google
           </Button>
-          <Button variant="outline" size="lg" onClick={() => signInWithProvider("facebook")} disabled={oauthLoading !== null} className="bg-white text-[#141210]">
-            <FacebookIcon />
-            Continuar com Facebook
-          </Button>
+          {FACEBOOK_LOGIN && (
+            <Button variant="outline" size="lg" onClick={() => signInWithProvider("facebook")} disabled={oauthLoading !== null} className="bg-white text-[#141210]">
+              <FacebookIcon />
+              Continuar com Facebook
+            </Button>
+          )}
           <div className="flex items-center gap-3 text-[13px] font-black uppercase">
             <span className="h-[3px] flex-1 bg-foreground" />
             ou por e-mail
