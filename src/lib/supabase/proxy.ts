@@ -1,16 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { SUPABASE_KEY, SUPABASE_URL } from "./env";
 
-const PROTECTED = ["/painel", "/cadastro", "/contratante", "/mensagens", "/privacidade", "/admin"];
+const PROTECTED = ["/painel", "/combina", "/cadastro", "/contratante", "/mensagens", "/privacidade", "/admin"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return response;
+  if (!SUPABASE_URL || !SUPABASE_KEY) return response;
 
-  const supabase = createServerClient(url, anon, {
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_KEY, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

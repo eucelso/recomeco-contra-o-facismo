@@ -62,3 +62,54 @@ export type Message = {
   created_at: string;
   read_at: string | null;
 };
+
+export type SwipeChoice = "like" | "pass";
+export type SwipeResult = { ok: true; matched: boolean; contactId?: string; peerName?: string } | { ok: false; error: string };
+
+export type CombinaJob = {
+  id: string;
+  title: string;
+  description: string;
+  area: string;
+  city: string | null;
+  state: string | null;
+  modality: Modality;
+  contract_type: ContractType;
+  salary_min: number | null;
+  salary_max: number | null;
+  benefits: string | null;
+  published_at: string;
+  employer_name: string;
+  employer_sector: string;
+  employer_city: string;
+  employer_state: string;
+  reasons: string[];
+};
+
+export type CombinaProfile = {
+  id: string;
+  public_code: string;
+  headline: string | null;
+  years_experience: number | null;
+  region: string;
+  areas: string[];
+  skills: string[];
+  shifts: string[];
+  modalities: Modality[];
+  contract_types: ContractType[];
+  available_from: string | null;
+  education: string | null;
+  courses: string | null;
+  has_resume: boolean;
+  checks: { label: string; ok: boolean }[];
+  experiences: { role_title: string; employer: string | null; start_year: number | null; end_year: number | null; description: string | null }[];
+};
+
+export type Connection = {
+  contact_id: string;
+  peer_name: string;
+  job_title: string | null;
+  last_message: string | null;
+  last_at: string;
+  unread: number;
+};

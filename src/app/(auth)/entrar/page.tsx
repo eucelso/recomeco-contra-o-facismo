@@ -5,6 +5,7 @@ export const metadata: Metadata = { title: "Entrar ou criar conta" };
 
 const ERRORS: Record<string, string> = {
   link: "Esse link expirou ou já foi usado. Peça um novo abaixo.",
+  navegador: "Abra o link no mesmo navegador em que você pediu o acesso, ou peça um novo link aqui.",
   sessao: "Sua sessão terminou. Entre de novo, por favor.",
 };
 

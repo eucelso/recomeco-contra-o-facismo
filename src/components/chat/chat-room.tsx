@@ -71,7 +71,7 @@ export function ChatRoom({
   const fmt = (iso: string) => new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="-mx-4 -mt-5 flex h-[calc(100dvh-68px)] flex-col md:mx-0 md:mt-0 md:h-[calc(100dvh-140px)] md:border-3 md:border-foreground">
+    <div className="-mx-4 -mt-5 flex h-[calc(100dvh-68px-56px)] flex-col md:mx-0 md:mt-0 md:h-[calc(100dvh-140px)] md:border-3 md:border-foreground">
       <header className="flex items-center gap-2.5 border-b-3 border-foreground bg-card p-2">
         <Link href="/mensagens" aria-label="Voltar para mensagens" className="flex size-11 shrink-0 items-center justify-center">
           <ChevronLeft className="size-7" strokeWidth={3} />

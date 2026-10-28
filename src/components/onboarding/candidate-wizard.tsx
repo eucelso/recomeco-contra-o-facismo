@@ -623,8 +623,8 @@ function Step4({ data, onBack }: { data: CandidateDraft; onBack: () => void }) {
     start(async () => {
       const r = await finishOnboarding(v, resumePath);
       if (!r.ok) return void toast.error(r.error);
-      toast.success("Cadastro concluído. Bem-vinda(o)!");
-      router.push("/painel");
+      toast.success("Cadastro concluído. Bem-vinda(o)! Veja as vagas que combinam com você.");
+      router.push("/combina");
       router.refresh();
     }),
   );

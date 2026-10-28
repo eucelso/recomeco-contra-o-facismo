@@ -29,7 +29,11 @@ export function ApplyButton({ jobId, applied }: { jobId: string; applied: boolea
           if (r.needProfile) return router.push("/cadastro/candidato");
           if (!r.ok) return void toast.error(r.error);
           setDone(true);
-          toast.success("Interesse enviado. A empresa vê seu perfil anônimo.");
+          if (r.matched && r.contactId) {
+            toast.success(`Deu liga com ${r.peerName ?? "a empresa"}! O chat está liberado.`, {
+              action: { label: "Abrir conversa", onClick: () => router.push(`/mensagens/${r.contactId}`) },
+            });
+          } else toast.success("Interesse enviado. A empresa vê seu perfil anônimo.");
         })
       }
     >

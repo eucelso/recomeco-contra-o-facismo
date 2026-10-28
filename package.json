@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "db:types": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts",
+    "link": "node --env-file=.env.local scripts/link-de-acesso.mjs",
+    "cadastros": "node --env-file=.env.local scripts/cadastros-hoje.mjs",
+    "demo": "node --env-file=.env.local scripts/demo.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.1",

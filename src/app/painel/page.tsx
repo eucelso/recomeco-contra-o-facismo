@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Check, Lock } from "lucide-react";
+import { ArrowRight, Check, GalleryHorizontalEnd, Lock } from "lucide-react";
 import { InviteCard } from "@/components/candidate/invite-card";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +44,18 @@ export default async function PainelPage() {
           {pending ? `Você tem ${pending} convite${pending > 1 ? "s" : ""} esperando resposta.` : "Nenhum convite novo por enquanto."}
         </p>
       </section>
+
+      <Link
+        href="/combina"
+        className="mr-1.5 flex items-center gap-4 border-3 border-foreground bg-accent p-4 text-accent-foreground shadow-hard"
+      >
+        <GalleryHorizontalEnd className="size-10 shrink-0" strokeWidth={2.4} aria-hidden="true" />
+        <span className="flex-1">
+          <strong className="block font-display text-[28px] uppercase leading-none">Abrir o Combina</strong>
+          <span className="text-sm font-semibold">Vagas escolhidas para o seu perfil. Se a empresa também quiser, dá liga.</span>
+        </span>
+        <ArrowRight className="size-6 shrink-0" strokeWidth={3} aria-hidden="true" />
+      </Link>
 
       <section aria-labelledby="inv-t" className="flex flex-col gap-3">
         <SectionTitle>

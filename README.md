@@ -49,6 +49,17 @@ Importe o repositório e defina `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABAS
 
 ---
 
+## Dados de teste (local)
+
+Com a `SUPABASE_SERVICE_ROLE_KEY` no `.env.local`:
+
+```bash
+npm run demo             # cria empresas, vagas, candidatos e interações e mostra links de acesso
+npm run demo -- --links  # só gera links novos (cada link vale 1 hora, uso único)
+npm run demo -- --limpar # apaga todas as contas de demonstração
+npm run link -- email@exemplo.com   # link de acesso para qualquer conta, sem enviar e-mail
+```
+
 ## Mapa de telas
 
 | Rota | Tela |
@@ -58,7 +69,8 @@ Importe o repositório e defina `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABAS
 | `/cadastro/candidato` | Cadastro em 4 etapas, currículo PDF e relato confidencial |
 | `/cadastro/contratante` | Dados da empresa, validação de CNPJ/CPF e Compromisso |
 | `/contratante/verificacao` | Em verificação → selo Empresa Comprometida |
-| `/vagas` | Mural com filtros, skeleton e estado vazio |
+| `/combina` | **Combina**: candidato desliza vagas, empresa desliza perfis anônimos; os dois dizem sim → dá liga e o chat abre |
+| `/vagas` | Mural com filtros, skeleton e estado vazio (o “Tenho interesse” aqui conta como swipe no Combina) |
 | `/contratante/candidatos[/código]` | Busca e perfil anônimo, com convite (Dialog) |
 | `/mensagens[/id]` | Chat em tempo real (só após o aceite) |
 | `/direitos` | Guia de direitos e canais oficiais |

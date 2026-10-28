@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, House, LayoutDashboard, MessageSquare, ShieldCheck, User, Users } from "lucide-react";
+import { Briefcase, GalleryHorizontalEnd, House, LayoutDashboard, MessageSquare, ShieldCheck, User, Users } from "lucide-react";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const CANDIDATE = [
   { href: "/painel", label: "Início", Icon: House },
+  { href: "/combina", label: "Combina", Icon: GalleryHorizontalEnd },
   { href: "/vagas", label: "Vagas", Icon: Briefcase },
   { href: "/mensagens", label: "Mensagens", Icon: MessageSquare },
   { href: "/privacidade", label: "Perfil", Icon: User },
 ];
 const EMPLOYER = [
   { href: "/contratante", label: "Painel", Icon: LayoutDashboard },
-  { href: "/contratante/vagas/nova", label: "Nova vaga", Icon: Briefcase },
+  { href: "/combina", label: "Combina", Icon: GalleryHorizontalEnd },
   { href: "/contratante/candidatos", label: "Candidatos", Icon: Users },
   { href: "/mensagens", label: "Mensagens", Icon: MessageSquare },
 ];
@@ -61,7 +62,7 @@ export function AppNav({ role, variant }: { role: Role; variant: "top" | "bottom
           href={href}
           aria-current={isActive(href) ? "page" : undefined}
           className={cn(
-            "flex h-[68px] flex-col items-center justify-center gap-1 text-[11px] font-extrabold uppercase",
+            "flex h-[68px] flex-col items-center justify-center gap-1 text-[10px] font-extrabold uppercase sm:text-[11px]",
             isActive(href) ? "bg-[#E8A317] font-black text-[#141210]" : "text-[#F2E8D5]",
           )}
         >

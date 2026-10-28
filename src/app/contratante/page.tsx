@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bell, Plus } from "lucide-react";
+import { Bell, GalleryHorizontalEnd, Plus } from "lucide-react";
 import { AnonBox, InitialsBox } from "@/components/brand/initials-box";
 import { ApplicantActions } from "@/components/employer/applicant-actions";
 import { JobStatusMenu } from "@/components/employer/job-status-menu";
@@ -83,12 +83,19 @@ export default async function ContratantePage() {
         </Alert>
       )}
 
-      <div className="pr-1.5">
-        <Button asChild size="lg" className="w-full">
+      <div className="flex flex-col gap-3 pr-1.5 sm:flex-row">
+        <Button asChild size="lg" className="flex-1">
           <Link href="/contratante/vagas/nova">
             <Plus strokeWidth={3} aria-hidden="true" /> Publicar nova vaga
           </Link>
         </Button>
+        {verified && (
+          <Button asChild size="lg" variant="accent" className="flex-1">
+            <Link href="/combina">
+              <GalleryHorizontalEnd strokeWidth={2.6} aria-hidden="true" /> Abrir o Combina
+            </Link>
+          </Button>
+        )}
       </div>
 
       <section aria-label="Vagas publicadas" className="flex flex-col gap-3">

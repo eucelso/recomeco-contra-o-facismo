@@ -246,9 +246,14 @@ export default async function LandingPage() {
               Pequenos negócios, empresas, cooperativas e autônomos: assine o Compromisso de Contratação Justa, passe pela
               verificação e publique vagas de graça.
             </p>
-            <Button asChild size="xl" variant="secondary" className="self-stretch sm:self-start">
-              <Link href="/entrar?modo=cadastro&tipo=employer">Quero contratar</Link>
-            </Button>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+              <Button asChild size="xl" variant="secondary" className="self-stretch sm:self-start">
+                <Link href="/entrar?modo=cadastro&tipo=employer">Quero contratar</Link>
+              </Button>
+              <Link href="/entrar?next=/contratante" className="text-center text-base font-extrabold underline underline-offset-4">
+                Já tenho conta de empresa
+              </Link>
+            </div>
           </div>
           <div className="mr-1.5 flex flex-col gap-4 border-3 border-foreground bg-background p-6 text-foreground shadow-hard-lg sm:p-8">
             <h3 className="font-display text-[26px] uppercase leading-tight">Compromisso de Contratação Justa</h3>

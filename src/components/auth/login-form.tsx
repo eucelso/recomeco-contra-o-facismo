@@ -136,6 +136,22 @@ export function LoginForm({
         </TabsList>
       </Tabs>
 
+      {mode === "login" && (
+        <p className="-mt-2 border-l-[5px] border-accent pl-3 text-sm font-semibold leading-relaxed">
+          Candidatos e empresas entram pelo mesmo lugar: use o e-mail da sua conta. Ainda não tem conta de empresa?{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setMode("signup");
+              setType("employer");
+            }}
+            className="font-extrabold underline"
+          >
+            Cadastrar empresa
+          </button>
+        </p>
+      )}
+
       {mode === "signup" && (
         <div role="radiogroup" aria-labelledby="tipo-label" className="flex flex-col gap-3 pr-1.5">
           <p id="tipo-label" className="text-sm font-black uppercase tracking-wide">

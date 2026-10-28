@@ -1,13 +1,16 @@
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase/env";
 import type { Role } from "@/lib/types";
 
 export function hasSupabaseEnv() {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  return Boolean(SUPABASE_URL && SUPABASE_KEY);
 }
 
-export async function getSession() {
+/** Uma chamada por requisição (deduplicada com React cache). */
+export const getSession = cache(async function getSession() {
   if (!hasSupabaseEnv()) return { supabase: null as never, user: null, role: null as Role | null };
   const supabase = await createClient();
   const {
@@ -16,7 +19,7 @@ export async function getSession() {
   if (!user) return { supabase, user: null, role: null as Role | null };
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   return { supabase, user, role: (profile?.role ?? null) as Role | null };
-}
+});
 
 /** Exige login e (opcionalmente) um papel. Redireciona quando não atende. */
 export async function requireRole(role?: Role) {

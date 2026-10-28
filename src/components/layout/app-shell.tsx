@@ -1,10 +1,27 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/fist";
+import { AccountMenu } from "@/components/layout/account-menu";
 import { AppNav } from "@/components/layout/app-nav";
+import { getSession } from "@/lib/auth";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export function AppShell({
+async function accountName(role: Role) {
+  const { supabase, user } = await getSession();
+  if (!user) return { name: "Minha conta", email: "" };
+  const email = user.email ?? "";
+  if (role === "employer") {
+    const { data } = await supabase.from("employers").select("display_name").eq("id", user.id).maybeSingle();
+    if (data?.display_name) return { name: data.display_name, email };
+  }
+  if (role === "candidate") {
+    const { data } = await supabase.from("candidates").select("preferred_name,full_name").eq("id", user.id).maybeSingle();
+    if (data) return { name: data.preferred_name || data.full_name, email };
+  }
+  return { name: (user.user_metadata?.full_name as string | undefined) ?? email.split("@")[0] ?? "Minha conta", email };
+}
+
+export async function AppShell({
   role,
   children,
   className,
@@ -13,17 +30,25 @@ export function AppShell({
   children: React.ReactNode;
   className?: string;
 }) {
+  const { name, email } = await accountName(role);
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="hidden border-b-3 border-foreground md:block">
-        <div className="container flex h-16 items-center justify-between">
+      <header className="sticky top-0 z-30 border-b-3 border-foreground bg-background">
+        <div className="container flex h-14 items-center justify-between gap-3 md:h-16">
           <Link href="/" aria-label="Recomeço — início">
-            <Logo />
+            <Logo className="[&>span:last-child]:text-[22px] md:[&>span:last-child]:text-[26px]" />
           </Link>
-          <AppNav role={role} variant="top" />
+          <div className="flex items-center gap-3">
+            <div className="hidden md:block">
+              <AppNav role={role} variant="top" />
+            </div>
+            <AccountMenu role={role} name={name} email={email} />
+          </div>
         </div>
       </header>
-      <main className={cn("mx-auto w-full max-w-2xl flex-1 px-4 pb-28 pt-5 md:pb-12 md:pt-8", className)}>{children}</main>
+      <main id="conteudo" className={cn("mx-auto w-full max-w-2xl flex-1 px-4 pb-28 pt-5 md:pb-12 md:pt-8", className)}>
+        {children}
+      </main>
       <AppNav role={role} variant="bottom" />
     </div>
   );
