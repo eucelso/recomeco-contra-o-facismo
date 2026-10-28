@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { z } from "zod";
 import Link from "next/link";
-import { Building, Lock, Mail, Search } from "lucide-react";
+import { Building, KeyRound, Lock, Mail, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -13,11 +12,26 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/lib/supabase/client";
-import { emailSchema } from "@/lib/validation";
+import { emailSchema, loginSchema, signupSchema } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 type Mode = "login" | "signup";
 type AccountType = "candidate" | "employer";
+type FormValues = { email: string; password: string };
+
+// O link por e-mail só funciona com SMTP próprio (domínio verificado). Ligue com NEXT_PUBLIC_MAGIC_LINK=true.
+const MAGIC_LINK = process.env.NEXT_PUBLIC_MAGIC_LINK === "true";
+
+function FacebookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-5">
+      <path
+        fill="#1877F2"
+        d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.88v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"
+      />
+    </svg>
+  );
+}
 
 function GoogleIcon() {
   return (
@@ -44,8 +58,13 @@ export function LoginForm({
   const [mode, setMode] = useState<Mode>(initialMode);
   const [type, setType] = useState<AccountType>(initialType);
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const form = useForm<z.infer<typeof emailSchema>>({ resolver: zodResolver(emailSchema), defaultValues: { email: "" } });
+  const [useLink, setUseLink] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<"google" | "facebook" | null>(null);
+  const schema = useLink ? emailSchema : mode === "signup" ? signupSchema : loginSchema;
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema) as unknown as Resolver<FormValues>,
+    defaultValues: { email: "", password: "" },
+  });
 
   const redirectUrl = (path: string) => {
     const url = new URL(path, window.location.origin);
@@ -54,7 +73,7 @@ export function LoginForm({
     return url.toString();
   };
 
-  async function onSubmit({ email }: z.infer<typeof emailSchema>) {
+  async function sendLink(email: string) {
     const supabase = createClient();
     const { error: err } = await supabase.auth.signInWithOtp({
       email,
@@ -77,16 +96,56 @@ export function LoginForm({
     setSentTo(email);
   }
 
-  async function signInWithGoogle() {
-    setGoogleLoading(true);
+  async function onSubmit({ email, password }: FormValues) {
+    if (useLink) return sendLink(email);
+
+    const supabase = createClient();
+    if (mode === "login") {
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      if (err) {
+        if (err.status === 429) toast.error("Muitas tentativas. Espere um minuto e tente de novo.");
+        else form.setError("password", { message: "E-mail ou senha incorretos." });
+        return;
+      }
+      window.location.assign(redirectUrl("/auth/continuar"));
+      return;
+    }
+
+    const { data, error: err } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: redirectUrl("/auth/confirm"), data: { account_type: type } },
+    });
+    if (err) {
+      if (/already|registered/i.test(err.message)) {
+        form.setError("email", { message: "Esse e-mail já tem conta. Use a aba Entrar." });
+      } else if (/password/i.test(err.message)) {
+        form.setError("password", { message: "Senha fraca demais. Use maiúscula, minúscula, número e símbolo." });
+      } else if (err.status === 429) {
+        toast.error("Muitas tentativas. Espere um minuto e tente de novo.");
+      } else {
+        toast.error("Não conseguimos criar a conta agora. Tente de novo em instantes.");
+      }
+      return;
+    }
+    // Com a confirmação de e-mail desligada o Supabase já devolve a sessão; ligada, a pessoa precisa confirmar.
+    if (data.session) {
+      window.location.assign(redirectUrl("/auth/continuar"));
+      return;
+    }
+    setSentTo(email);
+  }
+
+  async function signInWithProvider(provider: "google" | "facebook") {
+    setOauthLoading(provider);
     const supabase = createClient();
     const { error: err } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider,
       options: { redirectTo: redirectUrl("/auth/callback") },
     });
     if (err) {
-      setGoogleLoading(false);
-      toast.error("Não foi possível abrir o login do Google.");
+      setOauthLoading(null);
+      toast.error(`Não foi possível abrir o login do ${provider === "google" ? "Google" : "Facebook"}.`);
     }
   }
 
@@ -124,7 +183,7 @@ export function LoginForm({
         <h1 className="font-display text-[46px] uppercase leading-[0.98]">
           Que bom ter você <span className="text-primary">aqui.</span>
         </h1>
-        <p className="text-base font-medium leading-relaxed">Sem senha para decorar: a gente manda um link seguro para o seu e-mail.</p>
+        <p className="text-base font-medium leading-relaxed">Entre com e-mail e senha, ou continue com o Google ou o Facebook.</p>
       </div>
 
       {error && <Alert variant="destructive">{error}</Alert>}
@@ -138,7 +197,7 @@ export function LoginForm({
 
       {mode === "login" && (
         <p className="-mt-2 border-l-[5px] border-accent pl-3 text-sm font-semibold leading-relaxed">
-          Candidatos e empresas entram pelo mesmo lugar: use o e-mail da sua conta. Ainda não tem conta de empresa?{" "}
+          Candidatos e empresas entram pelo mesmo lugar: use o e-mail e a senha da sua conta. Ainda não tem conta de empresa?{" "}
           <button
             type="button"
             onClick={() => {
@@ -174,9 +233,13 @@ export function LoginForm({
         </div>
       ) : (
         <div className="flex flex-col gap-4 pr-1.5">
-          <Button variant="outline" size="lg" onClick={signInWithGoogle} disabled={googleLoading} className="bg-white text-[#141210]">
+          <Button variant="outline" size="lg" onClick={() => signInWithProvider("google")} disabled={oauthLoading !== null} className="bg-white text-[#141210]">
             <GoogleIcon />
             Continuar com Google
+          </Button>
+          <Button variant="outline" size="lg" onClick={() => signInWithProvider("facebook")} disabled={oauthLoading !== null} className="bg-white text-[#141210]">
+            <FacebookIcon />
+            Continuar com Facebook
           </Button>
           <div className="flex items-center gap-3 text-[13px] font-black uppercase">
             <span className="h-[3px] flex-1 bg-foreground" />
@@ -198,10 +261,38 @@ export function LoginForm({
                   </FormItem>
                 )}
               />
+              {!useLink && (
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Senha</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                          placeholder={mode === "signup" ? "Ex.: Recomeco#2026" : "Sua senha"}
+                          {...field}
+                        />
+                      </FormControl>
+                      {mode === "signup" && (
+                        <p className="text-sm font-medium">Mínimo de 8 caracteres, com maiúscula, minúscula, número e símbolo.</p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
-                <Mail strokeWidth={2.6} aria-hidden="true" />
-                {form.formState.isSubmitting ? "Enviando…" : "Enviar link de acesso"}
+                {useLink ? <Mail strokeWidth={2.6} aria-hidden="true" /> : <KeyRound strokeWidth={2.6} aria-hidden="true" />}
+                {form.formState.isSubmitting ? "Enviando…" : useLink ? "Enviar link de acesso" : mode === "signup" ? "Criar conta" : "Entrar"}
               </Button>
+              {MAGIC_LINK && (
+                <Button type="button" variant="ghost" onClick={() => setUseLink((v) => !v)} className="self-start px-0">
+                  {useLink ? "Prefiro usar senha" : "Prefiro receber um link por e-mail"}
+                </Button>
+              )}
             </form>
           </Form>
         </div>

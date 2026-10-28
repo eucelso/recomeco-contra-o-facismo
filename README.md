@@ -27,7 +27,8 @@ Outros comandos: `npm run build`, `npm run typecheck`.
 4. **Auth → URL Configuration**
    - *Site URL*: `http://localhost:3000` (em produção, o domínio final).
    - *Redirect URLs*: `http://localhost:3000/**` e `https://SEU-DOMINIO/**`.
-5. **Auth → Email Templates → Magic Link**: troque o link pelo abaixo. Esse formato (token_hash) funciona mesmo quando a pessoa abre o e-mail em outro navegador ou no app do Gmail:
+5. **Auth → Providers → Email**: deixe ativo e, enquanto você não tiver domínio próprio para o SMTP (passo 8), **desmarque "Confirm email"**. Assim o cadastro com senha funciona sem enviar e-mail. Defina o tamanho mínimo da senha em 8 e *Password requirements* como **Lowercase, uppercase letters, digits and symbols**.
+   *Opcional, só com SMTP próprio:* ative `NEXT_PUBLIC_MAGIC_LINK=true` no `.env.local` para mostrar o login por link, e ajuste o template assim em *Email Templates → Magic Link*: troque o link pelo abaixo. Esse formato (token_hash) funciona mesmo quando a pessoa abre o e-mail em outro navegador ou no app do Gmail:
    ```html
    <h2>Seu link de acesso ao Recomeço</h2>
    <p><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&redirect_to={{ .RedirectTo }}">Entrar no Recomeço</a></p>
@@ -35,8 +36,9 @@ Outros comandos: `npm run build`, `npm run typecheck`.
    ```
    Faça o mesmo em *Confirm signup*, com `type=signup`.
 6. **Auth → Providers → Google**: ative e cole o Client ID e o Secret do Google Cloud. Como redirect autorizado, use `https://SEU-PROJETO.supabase.co/auth/v1/callback`.
-7. **Auth → SMTP**: configure um provedor próprio (Resend, SES…) antes de abrir ao público. O SMTP padrão do Supabase tem limite baixo de envios.
-8. **Primeiro admin** (quem aprova contratantes). Crie sua conta pelo site e depois rode no SQL Editor:
+7. **Auth → Providers → Facebook**: crie um app em [developers.facebook.com](https://developers.facebook.com) (tipo *Consumer*, produto *Facebook Login*), copie App ID e App Secret para o Supabase e, em *Valid OAuth Redirect URIs* do Facebook, use `https://SEU-PROJETO.supabase.co/auth/v1/callback`. Para liberar o login a qualquer pessoa, o app precisa sair do modo *Development* (exige política de privacidade publicada).
+8. **Auth → SMTP**: configure um provedor próprio (Resend, SES…) antes de abrir ao público. O SMTP padrão do Supabase tem limite baixo de envios.
+9. **Primeiro admin** (quem aprova contratantes). Crie sua conta pelo site e depois rode no SQL Editor:
    ```sql
    update public.profiles set role = 'admin'
    where id = (select id from auth.users where email = 'seu@email.com');
@@ -65,7 +67,7 @@ npm run link -- email@exemplo.com   # link de acesso para qualquer conta, sem en
 | Rota | Tela |
 | --- | --- |
 | `/` | Landing (responsiva) com números ao vivo (`public_stats`) |
-| `/entrar`, `/entrar/tipo` | Link mágico, Google e escolha do tipo de conta |
+| `/entrar`, `/entrar/tipo` | E-mail e senha, Google, Facebook (link mágico opcional) e escolha do tipo de conta |
 | `/cadastro/candidato` | Cadastro em 4 etapas, currículo PDF e relato confidencial |
 | `/cadastro/contratante` | Dados da empresa, validação de CNPJ/CPF e Compromisso |
 | `/contratante/verificacao` | Em verificação → selo Empresa Comprometida |
@@ -95,5 +97,5 @@ npm run link -- email@exemplo.com   # link de acesso para qualquer conta, sem en
 
 - Revisar com assessoria jurídica a página `/direitos`, a `/politica-de-privacidade` (preencher os campos `[…]`) e o texto do Compromisso (`src/lib/constants.ts`).
 - Definir o processo humano de verificação de contratantes (o que conferir na Receita e prazos).
-- Rate limiting e captcha no envio de link mágico (Supabase Auth → Rate limits / Captcha).
+- Rate limiting e captcha no login e cadastro (Supabase Auth → Rate limits / Captcha).
 - Gerar tipos do banco: `npm run db:types` (requer o Supabase CLI logado).

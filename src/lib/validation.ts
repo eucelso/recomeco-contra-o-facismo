@@ -14,6 +14,21 @@ export const emailSchema = z.object({
   email: z.email({ error: "Confira o e-mail: parece que falta alguma parte (ex.: nome@gmail.com)." }),
 });
 
+const passwordField = z
+  .string({ error: "Digite sua senha." })
+  .min(8, "A senha precisa ter pelo menos 8 caracteres.")
+  .max(72, "A senha pode ter até 72 caracteres.")
+  .regex(/[a-z]/, "Falta uma letra minúscula na senha.")
+  .regex(/[A-Z]/, "Falta uma letra maiúscula na senha.")
+  .regex(/\d/, "Falta um número na senha.")
+  .regex(/[^A-Za-z0-9]/, "Falta um símbolo na senha (ex.: ! @ # $ %).");
+
+export const loginSchema = emailSchema.extend({
+  password: z.string({ error: "Digite sua senha." }).min(1, "Digite sua senha."),
+});
+
+export const signupSchema = emailSchema.extend({ password: passwordField });
+
 export const candidateStep1 = z.object({
   full_name: req("Diga seu nome completo.").min(3, "Nome muito curto.").max(120),
   preferred_name: z.string().trim().max(60).optional(),
