@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 39 57% 89%;
+    --foreground: 30 12% 7%;
+    --card: 40 60% 95%;
+    --card-foreground: 30 12% 7%;
+    --popover: 40 60% 95%;
+    --popover-foreground: 30 12% 7%;
+    --primary: 351 85% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 12% 7%;
+    --secondary-foreground: 39 57% 89%;
+    --muted: 39 40% 82%;
+    --muted-foreground: 26 13% 25%;
+    --accent: 39 82% 50%;
+    --accent-foreground: 30 12% 7%;
+    --destructive: 352 81% 31%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 136 33% 27%;
+    --success-foreground: 0 0% 100%;
+    --border: 30 12% 7%;
+    --input: 30 12% 7%;
+    --ring: 39 82% 50%;
+    --radius: 0.125rem;
+  }
+
+  .dark {
+    --background: 30 12% 7%;
+    --foreground: 39 57% 89%;
+    --card: 30 10% 11%;
+    --card-foreground: 39 57% 89%;
+    --popover: 30 10% 11%;
+    --popover-foreground: 39 57% 89%;
+    --primary: 351 80% 60%;
+    --primary-foreground: 30 12% 7%;
+    --secondary: 39 57% 89%;
+    --secondary-foreground: 30 12% 7%;
+    --muted: 30 8% 16%;
+    --muted-foreground: 39 25% 72%;
+    --accent: 39 82% 55%;
+    --accent-foreground: 30 12% 7%;
+    --destructive: 352 80% 66%;
+    --destructive-foreground: 30 12% 7%;
+    --success: 136 35% 55%;
+    --success-foreground: 30 12% 7%;
+    --border: 39 20% 70%;
+    --input: 39 20% 70%;
+    --ring: 39 82% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  :focus-visible {
+    @apply outline outline-[3px] outline-offset-2 outline-ring;
+  }
+}
+
+@layer utilities {
+  /* Raios de cartaz atrás das ilustrações */
+  .bg-rays-red {
+    background: repeating-conic-gradient(from 0deg at 50% 100%, #c8102e 0deg 8deg, #a50d26 8deg 16deg);
+  }
+  .bg-rays-mustard {
+    background: repeating-conic-gradient(from 0deg at 50% 100%, #e8a317 0deg 8deg, #d4910c 8deg 16deg);
+  }
+  .bg-rays-olive {
+    background: repeating-conic-gradient(from 0deg at 50% 100%, #2f5d3a 0deg 8deg, #264d30 8deg 16deg);
+  }
+  .bg-halftone {
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(hsl(var(--foreground)) 1.1px, transparent 1.5px);
+    background-size: 9px 9px;
+  }
+  .text-shadow-hard {
+    text-shadow: 3px 3px 0 #141210;
+  }
+  .highlight-accent {
+    background: linear-gradient(transparent 72%, hsl(var(--accent)) 72%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
