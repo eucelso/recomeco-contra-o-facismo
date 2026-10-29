@@ -13,13 +13,15 @@ export function SiteNav() {
   const pathname = usePathname();
   const inSupport = SUPPORT_LINKS.some((l) => pathname === l.href || pathname.startsWith(l.href + "/"));
 
+  const active = (href: string) => !href.includes("#") && (pathname === href || pathname.startsWith(href + "/"));
+
   const link = (l: { href: string; label: string }) => (
     <Link
       key={l.href}
       href={l.href}
       onClick={(e) => handleHashClick(e, l.href, pathname)}
-      aria-current={pathname === l.href ? "page" : undefined}
-      className={cn(item, pathname === l.href && "bg-accent text-accent-foreground no-underline")}
+      aria-current={active(l.href) ? "page" : undefined}
+      className={cn(item, active(l.href) && "bg-accent text-accent-foreground no-underline")}
     >
       {l.label}
     </Link>

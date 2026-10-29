@@ -3,6 +3,7 @@ import type { MouseEvent } from "react";
 export const MAIN_LINKS = [
   { href: "/#como-funciona", label: "Como funciona" },
   { href: "/vagas", label: "Vagas" },
+  { href: "/empresas", label: "Empresas" },
 ] as const;
 
 export const SUPPORT_LINKS = [
@@ -12,7 +13,7 @@ export const SUPPORT_LINKS = [
   { href: "/apoie", label: "Apoie negócios", hint: "Comércio local prejudicado" },
 ] as const;
 
-export const COMPANIES_LINK = { href: "/#empresas", label: "Para empresas" } as const;
+export const COMPANIES_LINK = { href: "/#empresas", label: "Quero contratar" } as const;
 
 /**
  * Clique em âncora (/#secao) estando na home: rola até a seção mesmo quando o hash já está na URL.

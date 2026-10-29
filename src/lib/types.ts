@@ -151,3 +151,11 @@ export type ReportPublic = {
   state: string | null;
   month: string | null;
 };
+
+export type EmployerPublic = {
+  id: string;
+  display_name: string;
+  sector: string;
+  city: string;
+  state: string;
+};
