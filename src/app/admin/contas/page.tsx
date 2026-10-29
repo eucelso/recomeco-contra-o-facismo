@@ -42,7 +42,7 @@ export default async function ContasPage({ searchParams }: { searchParams: Promi
       <div className="flex flex-col gap-6">
         <PageTitle kicker="Admin">Contas</PageTitle>
         <Alert variant="destructive">
-          <p>Não conseguimos carregar as contas. Se você ainda não aplicou a migration 20261030150000_admin_accounts.sql no Supabase, aplique e recarregue.</p>
+          <p>Não conseguimos carregar as contas. Se você ainda não aplicou as 4 migrations 20261030150000 a 20261030150300 (suspension_* e admin_accounts) no Supabase, aplique em ordem e recarregue.</p>
         </Alert>
       </div>
     );
