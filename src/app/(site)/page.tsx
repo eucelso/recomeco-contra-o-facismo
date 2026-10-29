@@ -125,19 +125,27 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Slogan */}
+      {/* Slogan: faixa em movimento contínuo (8 cópias: o laço desloca metade da faixa e ainda cobre telas largas) */}
       <div
         aria-hidden="true"
         className="overflow-hidden whitespace-nowrap border-y-3 border-foreground bg-[#141210] py-3 font-display text-[22px] tracking-wider text-[#F2E8D5] sm:py-4 sm:text-3xl"
       >
-        NINGUÉM SOLTA A MÃO DE NINGUÉM <span className="text-accent">★</span> TRABALHO DIGNO{" "}
-        <span className="text-[#E8344E]">★</span> ANTIFASCISTA <span className="text-accent">★</span> VOTO LIVRE{" "}
-        <span className="text-[#E8344E]">★</span> NINGUÉM SOLTA A MÃO DE NINGUÉM <span className="text-accent">★</span> TRABALHO
-        DIGNO
+        <div className="marquee-track flex w-max">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((n) => (
+            <span key={n} className="flex shrink-0 items-center gap-6 pr-6">
+              {["NINGUÉM SOLTA A MÃO DE NINGUÉM", "TRABALHO DIGNO", "ANTIFASCISTA", "VOTO LIVRE"].map((t, i) => (
+                <span key={t} className="flex items-center gap-6">
+                  {t}
+                  <span className={i % 2 === 0 ? "text-accent" : "text-[#E8344E]"}>★</span>
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Como funciona */}
-      <section id="como-funciona" className="container flex scroll-mt-6 flex-col gap-10 py-14 sm:py-24">
+      <section id="como-funciona" className="container flex scroll-mt-24 flex-col gap-10 py-14 sm:py-24">
         <div className="flex max-w-3xl flex-col gap-3">
           <span className="text-sm font-black uppercase tracking-[0.12em] text-primary">Como funciona</span>
           <h2 className="font-display text-[44px] uppercase leading-[0.98] sm:text-[64px]">Três passos para recomeçar</h2>
@@ -240,7 +248,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Empresas */}
-      <section id="empresas" className="scroll-mt-6 border-y-3 border-foreground bg-accent text-accent-foreground">
+      <section id="empresas" className="scroll-mt-24 border-y-3 border-foreground bg-accent text-accent-foreground">
         <div className="container grid grid-cols-1 items-center gap-10 py-14 sm:py-24 lg:grid-cols-2 lg:gap-12">
           <div className="flex flex-col gap-5">
             <span className="text-sm font-black uppercase tracking-[0.12em]">Para empresas e contratantes</span>
