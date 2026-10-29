@@ -9,5 +9,5 @@ export async function proxy(request: NextRequest) {
 
 // Páginas públicas estáticas ficam fora do proxy para serem servidas direto do CDN.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|direitos$|politica-de-privacidade$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|direitos$|advogados$|politica-de-privacidade$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)"],
 };
