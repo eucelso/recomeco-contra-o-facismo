@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/fist";
-import { Button } from "@/components/ui/button";
 import { MobileMenu } from "@/components/layout/mobile-menu";
-import { getSession, homeFor } from "@/lib/auth";
+import { HeaderAuth } from "@/components/layout/header-auth";
 
 const LINKS = [
   { href: "/#como-funciona", label: "Como funciona" },
@@ -11,8 +10,7 @@ const LINKS = [
   { href: "/#empresas", label: "Para empresas" },
 ];
 
-export async function SiteHeader() {
-  const { user, role } = await getSession();
+export function SiteHeader() {
   return (
     <header className="border-b-3 border-foreground bg-background">
       <div className="container flex h-16 items-center justify-between gap-4 sm:h-[76px]">
@@ -27,20 +25,7 @@ export async function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          {user ? (
-            <Button asChild variant="secondary" size="sm" className="shadow-none">
-              <Link href={homeFor(role)}>Meu painel</Link>
-            </Button>
-          ) : (
-            <>
-              <Button asChild variant="ghost" size="sm" className="shadow-none">
-                <Link href="/entrar">Entrar</Link>
-              </Button>
-              <Button asChild variant="secondary" size="sm" className="hidden shadow-none sm:inline-flex">
-                <Link href="/entrar?modo=cadastro">Criar conta</Link>
-              </Button>
-            </>
-          )}
+          <HeaderAuth />
           <MobileMenu links={LINKS} />
         </div>
       </div>

@@ -5,15 +5,18 @@ import { PortraitMosaic } from "@/components/brand/portraits";
 import { Button } from "@/components/ui/button";
 import { hasSupabaseEnv } from "@/lib/auth";
 import { COMMITMENT_ITEMS } from "@/lib/constants";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
+
+// Página estática, refeita a cada 5 minutos (os números não precisam ser em tempo real).
+export const revalidate = 300;
 
 type Stats = { active_jobs: number; hires: number; verified_employers: number; cities: number };
 
 async function getStats(): Promise<Stats | null> {
   if (!hasSupabaseEnv()) return null;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data } = await supabase.rpc("public_stats");
     return (data as Stats) ?? null;
   } catch {
