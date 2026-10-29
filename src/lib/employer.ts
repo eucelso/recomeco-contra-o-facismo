@@ -16,6 +16,8 @@ export async function requireEmployer() {
     responsible_name: string;
     verification_status: "pending" | "verified" | "rejected";
     rejection_reason: string | null;
+    suspended_at: string | null;
+    suspension_reason: string | null;
     created_at: string;
     commitment_accepted_at: string;
   } };

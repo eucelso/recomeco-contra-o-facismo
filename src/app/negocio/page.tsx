@@ -18,6 +18,13 @@ export default async function NegocioPage() {
     <div className="flex flex-col gap-6">
       <PageTitle kicker="Negócio">{business.display_name}</PageTitle>
 
+      {business.suspended_at && (
+        <Alert variant="destructive">
+          <p>
+            Sua conta foi retirada de exibição pela nossa equipe{business.suspension_reason ? `: ${business.suspension_reason}` : "."} Enquanto isso, o negócio não aparece em Apoie.
+          </p>
+        </Alert>
+      )}
       {status === "verified" && (
         <Badge variant="success" className="self-start">
           <Check strokeWidth={3.6} aria-hidden="true" /> Aprovado

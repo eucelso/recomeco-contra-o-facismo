@@ -7,6 +7,7 @@ import { SectionTitle } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { APPLICATION_STATUS } from "@/lib/constants";
+import { Alert } from "@/components/ui/alert";
 import { requireRole } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Meu painel" };
@@ -14,7 +15,7 @@ export const metadata: Metadata = { title: "Meu painel" };
 export default async function PainelPage() {
   const { supabase, user } = await requireRole("candidate");
   const [{ data: me }, { data: contacts }, { data: apps }, { data: report }] = await Promise.all([
-    supabase.from("candidates").select("full_name,preferred_name,completed_at,anonymous").eq("id", user.id).maybeSingle(),
+    supabase.from("candidates").select("full_name,preferred_name,completed_at,anonymous,suspended_at,suspension_reason").eq("id", user.id).maybeSingle(),
     supabase.from("contact_requests").select("id,employer_id,job_id,message,status,created_at").eq("candidate_id", user.id).order("created_at", { ascending: false }),
     supabase.from("applications").select("id,status,created_at,job_id").eq("candidate_id", user.id).order("created_at", { ascending: false }),
     supabase.from("confidential_reports").select("candidate_id").eq("candidate_id", user.id).maybeSingle(),
@@ -43,6 +44,15 @@ export default async function PainelPage() {
           {pending ? `Você tem ${pending} convite${pending > 1 ? "s" : ""} esperando resposta.` : "Nenhum convite novo por enquanto."}
         </p>
       </section>
+
+      {me.suspended_at && (
+        <Alert variant="destructive">
+          <p>
+            Seu perfil foi retirado de exibição pela nossa equipe{me.suspension_reason ? `: ${me.suspension_reason}` : "."} Enquanto isso, as empresas não
+            veem seu perfil nem enviam convites.
+          </p>
+        </Alert>
+      )}
 
       <Link
         href="/combina"

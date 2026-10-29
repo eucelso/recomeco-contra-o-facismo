@@ -71,6 +71,15 @@ export default async function ContratantePage() {
         </dl>
       </section>
 
+      {employer.suspended_at && (
+        <Alert variant="destructive">
+          <p>
+            Sua conta foi retirada de exibição pela nossa equipe{employer.suspension_reason ? `: ${employer.suspension_reason}` : "."} Enquanto isso, suas
+            vagas não aparecem e você não vê candidatos nem envia convites.
+          </p>
+        </Alert>
+      )}
+
       {!verified && (
         <Alert variant="accent">
           <p>

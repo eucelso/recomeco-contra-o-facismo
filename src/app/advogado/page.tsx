@@ -18,6 +18,13 @@ export default async function AdvogadoPage() {
     <div className="flex flex-col gap-6">
       <PageTitle kicker="Advogado(a) voluntário(a)">Olá, {lawyer.full_name.split(" ")[0]}</PageTitle>
 
+      {lawyer.suspended_at && (
+        <Alert variant="destructive">
+          <p>
+            Sua conta foi retirada de exibição pela nossa equipe{lawyer.suspension_reason ? `: ${lawyer.suspension_reason}` : "."} Enquanto isso, você não aparece na lista pública.
+          </p>
+        </Alert>
+      )}
       {status === "verified" && (
         <Badge variant="success" className="self-start">
           <Check strokeWidth={3.6} aria-hidden="true" /> OAB conferida

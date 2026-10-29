@@ -17,6 +17,8 @@ export type LawyerRow = {
   bio: string | null;
   verification_status: "pending" | "verified" | "rejected";
   rejection_reason: string | null;
+  suspended_at: string | null;
+  suspension_reason: string | null;
   created_at: string;
 };
 

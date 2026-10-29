@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, GalleryHorizontalEnd, House, LayoutDashboard, MessageSquare, Scale, ShieldCheck, Store, User, Users } from "lucide-react";
+import { Briefcase, GalleryHorizontalEnd, House, LayoutDashboard, MessageSquare, Scale, ShieldCheck, Store, UsersRound, User, Users } from "lucide-react";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +31,7 @@ const BUSINESS = [
 ];
 const ADMIN = [
   { href: "/admin/verificacoes", label: "Verificações", Icon: ShieldCheck },
+  { href: "/admin/contas", label: "Contas", Icon: UsersRound },
   { href: "/vagas", label: "Vagas", Icon: Briefcase },
 ];
 
