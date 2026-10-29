@@ -216,7 +216,7 @@ export function DossierEditor({ facts, notes }: { facts: Fact[]; notes: string }
       <Notes initial={notes} />
 
       {(facts.length > 0 || notes.trim()) && (
-        <section aria-labelledby="pdf-t" className="flex flex-col gap-2 border-3 border-foreground bg-accent p-4 text-accent-foreground">
+        <section aria-labelledby="pdf-t" className="flex min-w-0 flex-col gap-2 border-3 border-foreground bg-accent p-4 text-accent-foreground">
           <h2 id="pdf-t" className="font-display text-2xl uppercase leading-none">
             Baixar em PDF
           </h2>
@@ -224,12 +224,12 @@ export function DossierEditor({ facts, notes }: { facts: Fact[]; notes: string }
             Gera um PDF com a linha do tempo e o seu texto. Leve ao seu advogado, à Defensoria ou ao sindicato, ou procure um advogado voluntário e envie você mesmo.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button asChild variant="secondary" className="shadow-none">
+            <Button asChild variant="secondary" className="h-auto min-h-12 w-full whitespace-normal py-2 text-center shadow-none sm:w-auto">
               <Link href="/dossie/imprimir">
                 <FileDown strokeWidth={2.8} aria-hidden="true" /> Gerar PDF do dossiê
               </Link>
             </Button>
-            <Button asChild variant="outline" className="shadow-none">
+            <Button asChild variant="outline" className="h-auto min-h-12 w-full whitespace-normal py-2 text-center shadow-none sm:w-auto">
               <Link href="/advogados">
                 <Scale strokeWidth={2.8} aria-hidden="true" /> Encontrar advogado voluntário
               </Link>
