@@ -11,7 +11,7 @@ export function ReturnToSignup() {
   useEffect(() => {
     try {
       const p = sessionStorage.getItem(RETURN_KEY);
-      if (p?.startsWith("/cadastro/")) setPath(p);
+      if (p === "/painel/dossie" || p?.startsWith("/cadastro/")) setPath(p);
     } catch {}
   }, []);
   if (!path) return null;
@@ -29,7 +29,7 @@ export function ReturnToSignup() {
           }}
           className="mx-auto flex h-12 max-w-3xl items-center justify-center gap-2 border-3 border-foreground bg-primary text-sm font-black uppercase text-primary-foreground shadow-hard-sm"
         >
-          <ArrowLeft className="size-5" strokeWidth={3} aria-hidden="true" /> Voltar ao meu cadastro
+          <ArrowLeft className="size-5" strokeWidth={3} aria-hidden="true" /> {path.startsWith("/cadastro/") ? "Voltar ao meu cadastro" : "Voltar ao meu dossiê"}
         </Link>
       </div>
     </>

@@ -28,10 +28,14 @@ export async function deleteReport() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false as const };
-  const { error } = await supabase.from("confidential_reports").delete().eq("candidate_id", user.id);
-  if (error) return { ok: false as const };
+  const [{ error }, { error: factsError }] = await Promise.all([
+    supabase.from("confidential_reports").delete().eq("candidate_id", user.id),
+    supabase.from("report_facts").delete().eq("candidate_id", user.id),
+  ]);
+  if (error || factsError) return { ok: false as const };
   await supabase.from("consent_events").insert({ user_id: user.id, kind: "relato_confidencial", granted: false });
   revalidatePath("/privacidade");
+  revalidatePath("/painel/dossie");
   return { ok: true as const };
 }
 

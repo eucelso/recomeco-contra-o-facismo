@@ -15,11 +15,12 @@ export default async function PrivacidadePage() {
   const { supabase, user, role } = await requireRole();
   const isCandidate = role === "candidate";
 
-  const [{ data: c }, { data: report }, { data: shared }, { data: consents }] = await Promise.all([
+  const [{ data: c }, { data: report }, { data: shared }, { data: consents }, { count: factsCount }] = await Promise.all([
     isCandidate ? supabase.from("candidates").select("anonymous,show_region_only,invites_paused").eq("id", user.id).maybeSingle() : Promise.resolve({ data: null }),
     isCandidate ? supabase.from("confidential_reports").select("created_at,updated_at").eq("candidate_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
     isCandidate ? supabase.from("contact_requests").select("id,employer_id,responded_at").eq("candidate_id", user.id).eq("status", "accepted") : Promise.resolve({ data: [] }),
     supabase.from("consent_events").select("kind,granted,created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
+    isCandidate ? supabase.from("report_facts").select("id", { count: "exact", head: true }).eq("candidate_id", user.id) : Promise.resolve({ count: 0 }),
   ]);
   const empIds = (shared ?? []).map((s) => s.employer_id);
   const { data: emps } = empIds.length ? await supabase.from("employer_public").select("id,display_name").in("id", empIds) : { data: [] };
@@ -81,9 +82,11 @@ export default async function PrivacidadePage() {
           <p className="text-sm text-[#E6DAC2]">
             {report
               ? `Guardado em ${new Date(report.updated_at ?? report.created_at).toLocaleDateString("pt-BR")} · nunca compartilhado.`
-              : "Você não guardou nenhum relato."}
+              : (factsCount ?? 0) > 0
+                ? "Você tem fatos guardados · nunca compartilhado."
+                : "Você não guardou nenhum relato."}
           </p>
-          <ReportActions hasReport={Boolean(report)} />
+          <ReportActions hasReport={Boolean(report) || (factsCount ?? 0) > 0} />
         </section>
       )}
 

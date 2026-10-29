@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, Check, GalleryHorizontalEnd, Lock } from "lucide-react";
+import { ArrowRight, Check, GalleryHorizontalEnd, Lock, NotebookPen } from "lucide-react";
 import { InviteCard } from "@/components/candidate/invite-card";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +15,12 @@ export const metadata: Metadata = { title: "Meu painel" };
 
 export default async function PainelPage() {
   const { supabase, user } = await requireRole("candidate");
-  const [{ data: me }, { data: contacts }, { data: apps }, { data: report }] = await Promise.all([
+  const [{ data: me }, { data: contacts }, { data: apps }, { data: report }, { count: factsCount }] = await Promise.all([
     supabase.from("candidates").select("full_name,preferred_name,completed_at,anonymous,suspended_at,suspension_reason").eq("id", user.id).maybeSingle(),
     supabase.from("contact_requests").select("id,employer_id,job_id,message,status,created_at").eq("candidate_id", user.id).order("created_at", { ascending: false }),
     supabase.from("applications").select("id,status,created_at,job_id").eq("candidate_id", user.id).order("created_at", { ascending: false }),
     supabase.from("confidential_reports").select("candidate_id").eq("candidate_id", user.id).maybeSingle(),
+    supabase.from("report_facts").select("id", { count: "exact", head: true }).eq("candidate_id", user.id),
   ]);
   if (!me?.completed_at) redirect("/cadastro/candidato");
 
@@ -63,6 +64,18 @@ export default async function PainelPage() {
         <span className="flex-1">
           <strong className="block font-display text-[28px] uppercase leading-none">Abrir o Combina</strong>
           <span className="text-sm font-semibold">Vagas escolhidas para o seu perfil. Se a empresa também quiser, dá liga.</span>
+        </span>
+        <ArrowRight className="size-6 shrink-0" strokeWidth={3} aria-hidden="true" />
+      </Link>
+
+      <Link
+        href="/painel/dossie"
+        className="mr-1.5 flex items-center gap-4 border-3 border-foreground bg-[#141210] p-4 text-[#F2E8D5] shadow-hard-accent"
+      >
+        <NotebookPen className="size-10 shrink-0 text-[#E8A317]" strokeWidth={2.4} aria-hidden="true" />
+        <span className="flex-1">
+          <strong className="block font-display text-[28px] uppercase leading-none">Meu dossiê</strong>
+          <span className="text-sm font-semibold">Um caderno só seu para organizar datas, provas e testemunhas. Ninguém vê.</span>
         </span>
         <ArrowRight className="size-6 shrink-0" strokeWidth={3} aria-hidden="true" />
       </Link>
@@ -141,7 +154,7 @@ export default async function PainelPage() {
           </li>
           <li className="flex items-center gap-2">
             <Check className="size-4 text-[#E8A317]" strokeWidth={3} aria-hidden="true" />
-            {report ? "Relato confidencial guardado só para você" : "Nenhum relato guardado"}
+            {report || (factsCount ?? 0) > 0 ? "Dossiê guardado só para você" : "Nenhum dossiê guardado"}
           </li>
         </ul>
         <Link href="/privacidade" className="flex h-12 items-center justify-center border-3 border-[#F2E8D5] text-sm font-black uppercase">
