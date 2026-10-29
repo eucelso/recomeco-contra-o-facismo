@@ -22,10 +22,10 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Não coloque código entre createServerClient e getUser: isso renova o token.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Não coloque código entre createServerClient e getClaims: isso renova o token.
+  // getClaims confere a assinatura do JWT localmente (sem ir ao Auth do Supabase) quando o projeto usa chaves assimétricas.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims ?? null;
 
   const path = request.nextUrl.pathname;
   if (!user && PROTECTED.some((p) => path === p || path.startsWith(p + "/"))) {
