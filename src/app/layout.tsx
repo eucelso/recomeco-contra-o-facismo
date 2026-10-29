@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { AmbientAudio } from "@/components/audio/ambient-audio";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Pular para o conteúdo
         </a>
         {children}
+        <AmbientAudio />
         <Toaster />
       </body>
     </html>
