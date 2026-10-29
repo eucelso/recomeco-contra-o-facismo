@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import type { SuspendKind } from "@/lib/admin-accounts";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 
@@ -31,15 +32,6 @@ export async function deleteAccountAsAdmin(id: string, confirmation: string) {
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (!isAdmin) return { ok: false as const, error: "Sem permissão." };
 
-  // Currículo (só candidatos têm). O arquivo não some sozinho com a conta: tenta apagar se houver chave de serviço.
-  try {
-    const admin = createAdminClient();
-    const { data: files } = await admin.storage.from("resumes").list(id);
-    if (files?.length) await admin.storage.from("resumes").remove(files.map((f) => `${id}/${f.name}`));
-  } catch {
-    /* sem chave de serviço: a exclusão segue, o arquivo (se existir) fica órfão */
-  }
-
   const { data, error } = await supabase.rpc("admin_delete_account", { p_id: id });
   if (error) {
     if (error.message.includes("admin")) return { ok: false as const, error: "Contas de administração não podem ser excluídas." };
@@ -52,5 +44,16 @@ export async function deleteAccountAsAdmin(id: string, confirmation: string) {
   revalidatePath("/apoie");
   revalidatePath("/empresas", "layout");
   revalidatePath("/vagas", "layout");
+
+  // Currículo: o arquivo não some com a conta. Limpa depois de responder, para não atrasar a tela.
+  after(async () => {
+    try {
+      const admin = createAdminClient();
+      const { data: files } = await admin.storage.from("resumes").list(id);
+      if (files?.length) await admin.storage.from("resumes").remove(files.map((f) => `${id}/${f.name}`));
+    } catch {
+      /* sem chave de serviço: o arquivo (se existir) fica órfão */
+    }
+  });
   return { ok: true as const };
 }

@@ -20,7 +20,7 @@ const VARIANT: Record<string, "success" | "accent" | "destructive" | "dashed"> =
   suspended: "destructive",
 };
 
-function DeleteControl({ row }: { row: AccountRow }) {
+function DeleteControl({ row, onDeleted }: { row: AccountRow; onDeleted: () => void }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [pending, start] = useTransition();
@@ -30,6 +30,7 @@ function DeleteControl({ row }: { row: AccountRow }) {
       const r = await deleteAccountAsAdmin(row.id, text);
       if (!r.ok) return void toast.error(r.error);
       toast.success("Conta excluída.");
+      onDeleted();
     });
 
   if (!open)
@@ -113,7 +114,10 @@ function SuspendInner({ row, kind }: { row: AccountRow; kind: NonNullable<Accoun
   );
 }
 
-export function AccountList({ rows }: { rows: AccountRow[] }) {
+export function AccountList({ rows: all }: { rows: AccountRow[] }) {
+  // Some da lista na hora; quando a página recarrega com os dados novos, o id já não vem mais.
+  const [gone, setGone] = useState<Set<string>>(new Set());
+  const rows = useMemo(() => all.filter((r) => !gone.has(r.id)), [all, gone]);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
 
@@ -179,7 +183,7 @@ export function AccountList({ rows }: { rows: AccountRow[] }) {
                 <dd>{r.last_sign_in_at ? date(r.last_sign_in_at) : "Nunca entrou"}</dd>
               </dl>
               <SuspendControl row={r} />
-              <DeleteControl row={r} />
+              <DeleteControl row={r} onDeleted={() => setGone((g) => new Set(g).add(r.id))} />
             </li>
           ))}
         </ul>
