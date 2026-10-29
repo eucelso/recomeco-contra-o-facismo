@@ -46,11 +46,6 @@ export default async function RelatosPage() {
       <Alert variant="accent">
         <p>
           A equipe lê cada relato antes de publicar e retira nomes e dados que identifiquem alguém. O Recomeço não confirma os relatos e não acusa ninguém.
-          Para pedir a remoção de um relato, escreva para o contato indicado na{" "}
-          <Link href="/politica-de-privacidade" className="underline">
-            política de privacidade
-          </Link>
-          .
         </p>
       </Alert>
       {reports.length === 0 ? (

@@ -3,15 +3,11 @@ import Link from "next/link";
 
 export const metadata: Metadata = { title: "Política de privacidade" };
 
-// Rascunho para revisão jurídica. Preencha os campos entre colchetes antes de publicar.
 export default function PoliticaPage() {
   const h2 = "font-display text-2xl uppercase leading-tight";
   return (
     <article className="mx-auto flex max-w-2xl flex-col gap-5 px-4 py-10 text-[15px] leading-relaxed">
       <h1 className="font-display text-5xl uppercase leading-none">Política de privacidade</h1>
-      <p className="border-3 border-foreground bg-accent p-3 font-bold text-accent-foreground">
-        Rascunho para revisão jurídica. Controlador: [RAZÃO SOCIAL], CNPJ [NÚMERO]. Encarregado(a) de dados: [NOME] — [E-MAIL].
-      </p>
       <h2 className={h2}>O que não coletamos</h2>
       <p>
         Nunca pedimos em quem você votou nem sua posição política. Não existe campo para isso. Opinião política é dado sensível pela
@@ -40,7 +36,7 @@ export default function PoliticaPage() {
         <Link href="/privacidade" className="font-bold underline">
           Privacidade e dados
         </Link>
-        , e retirar consentimentos. Dúvidas: [E-MAIL DO ENCARREGADO].
+        , e retirar consentimentos.
       </p>
       <h2 className={h2}>Denúncias</h2>
       <p>Não recebemos nem publicamos denúncias contra pessoas ou empresas. Indicamos apenas os canais oficiais.</p>
