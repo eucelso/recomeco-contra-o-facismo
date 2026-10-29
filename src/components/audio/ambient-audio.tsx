@@ -79,7 +79,7 @@ export function AmbientAudio() {
         onClick={toggle}
         aria-pressed={playing}
         aria-label={playing ? "Pausar a música de fundo" : "Tocar a música de fundo"}
-        className="fixed bottom-[calc(env(safe-area-inset-bottom)+84px)] left-3 z-30 flex h-11 items-center gap-2 border-3 border-foreground bg-secondary px-3 text-secondary-foreground shadow-hard-sm md:bottom-4"
+        className="fixed print:hidden bottom-[calc(env(safe-area-inset-bottom)+84px)] left-3 z-30 flex h-11 items-center gap-2 border-3 border-foreground bg-secondary px-3 text-secondary-foreground shadow-hard-sm md:bottom-4"
       >
         {playing ? <Pause className="size-5" strokeWidth={3} aria-hidden="true" /> : <Play className="size-5" strokeWidth={3} aria-hidden="true" />}
         <span className="text-xs font-black uppercase tracking-wider">{playing ? "Pausar" : "Tocar"}</span>

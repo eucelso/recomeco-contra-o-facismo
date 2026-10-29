@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { CircleAlert, Pencil, Plus, Trash } from "lucide-react";
+import { CircleAlert, FileDown, Pencil, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { deleteFact, saveFact, saveNotes } from "@/app/painel/dossie/actions";
 import { Button } from "@/components/ui/button";
@@ -214,6 +214,20 @@ export function DossierEditor({ facts, notes }: { facts: Fact[]; notes: string }
       </section>
 
       <Notes initial={notes} />
+
+      {(facts.length > 0 || notes.trim()) && (
+        <section aria-labelledby="pdf-t" className="flex flex-col gap-2 border-3 border-foreground bg-accent p-4 text-accent-foreground">
+          <h2 id="pdf-t" className="font-display text-2xl uppercase leading-none">
+            Levar a um advogado
+          </h2>
+          <p className="text-sm font-semibold">Gera um PDF com a linha do tempo e o seu texto, pronto para imprimir ou enviar.</p>
+          <Button asChild variant="secondary" className="self-start shadow-none">
+            <Link href="/dossie/imprimir">
+              <FileDown strokeWidth={2.8} aria-hidden="true" /> Gerar PDF do dossiê
+            </Link>
+          </Button>
+        </section>
+      )}
     </div>
   );
 }
