@@ -2,7 +2,8 @@ export type SuspendKind = "lawyer" | "business" | "employer" | "candidate";
 
 export type AccountRow = {
   id: string;
-  kind: SuspendKind;
+  /** Nulo em contas sem cadastro completo: só podem ser excluídas, não suspensas. */
+  kind: SuspendKind | null;
   /** Conta oculta da plataforma pelo admin. */
   suspended: boolean;
   suspensionReason: string | null;
@@ -22,6 +23,7 @@ export const ACCOUNT_TABS = [
   { key: "candidatos", label: "Procuram trabalho" },
   { key: "empresas", label: "Empresas" },
   { key: "negocios", label: "Negócios prejudicados" },
+  { key: "incompletas", label: "Cadastro incompleto" },
 ] as const;
 export type AccountTab = (typeof ACCOUNT_TABS)[number]["key"];
 

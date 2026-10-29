@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { setSuspension } from "@/app/admin/contas/actions";
+import { deleteAccountAsAdmin, setSuspension } from "@/app/admin/contas/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,13 +20,57 @@ const VARIANT: Record<string, "success" | "accent" | "destructive" | "dashed"> =
   suspended: "destructive",
 };
 
+function DeleteControl({ row }: { row: AccountRow }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [pending, start] = useTransition();
+  const ready = text.trim().toUpperCase() === "EXCLUIR";
+  const run = () =>
+    start(async () => {
+      const r = await deleteAccountAsAdmin(row.id, text);
+      if (!r.ok) return void toast.error(r.error);
+      toast.success("Conta excluída.");
+    });
+
+  if (!open)
+    return (
+      <Button variant="ghost" size="sm" className="self-start px-0 text-destructive underline" onClick={() => setOpen(true)}>
+        Excluir conta
+      </Button>
+    );
+  return (
+    <div className="flex flex-col gap-2 border-3 border-destructive p-3">
+      <p className="text-sm font-bold">
+        Excluir {row.email} de vez? Apaga o perfil, o cadastro, as vagas, as mensagens e tudo ligado a essa conta. Não dá para desfazer.
+      </p>
+      <label htmlFor={`del-${row.id}`} className="text-xs font-black uppercase">
+        Digite EXCLUIR para confirmar
+      </label>
+      <Input id={`del-${row.id}`} autoComplete="off" value={text} onChange={(e) => setText(e.target.value)} placeholder="EXCLUIR" />
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" className="flex-1 shadow-none" disabled={pending} onClick={() => (setOpen(false), setText(""))}>
+          Cancelar
+        </Button>
+        <Button variant="destructive" size="sm" className="flex-1 shadow-none" disabled={!ready || pending} onClick={run}>
+          {pending ? "Excluindo…" : "Excluir tudo"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function SuspendControl({ row }: { row: AccountRow }) {
+  if (!row.kind) return null;
+  return <SuspendInner row={row} kind={row.kind} />;
+}
+
+function SuspendInner({ row, kind }: { row: AccountRow; kind: NonNullable<AccountRow["kind"]> }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [pending, start] = useTransition();
   const run = (suspend: boolean) =>
     start(async () => {
-      const r = await setSuspension(row.kind, row.id, suspend, reason);
+      const r = await setSuspension(kind, row.id, suspend, reason);
       if (!r.ok) return void toast.error(r.error);
       toast.success(suspend ? "Conta oculta da plataforma." : "Conta voltou a ser exibida.");
       setOpen(false);
@@ -135,6 +179,7 @@ export function AccountList({ rows }: { rows: AccountRow[] }) {
                 <dd>{r.last_sign_in_at ? date(r.last_sign_in_at) : "Nunca entrou"}</dd>
               </dl>
               <SuspendControl row={r} />
+              <DeleteControl row={r} />
             </li>
           ))}
         </ul>

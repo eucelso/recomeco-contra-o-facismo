@@ -47,14 +47,28 @@ export default async function ContasPage({ searchParams }: { searchParams: Promi
       </div>
     );
   const accounts = (accountsData ?? []) as Account[];
+
+  // Quem escolheu o tipo mas não terminou o cadastro (ou nem escolheu) não aparece nas outras abas.
+  const [{ data: lawyerIds }, { data: businessIds }, { data: employerIds }] = await Promise.all([
+    supabase.from("lawyers").select("id").limit(5000),
+    supabase.from("businesses").select("id").limit(5000),
+    supabase.from("employers").select("id").limit(5000),
+  ]);
+  const hasRow = {
+    lawyer: new Set((lawyerIds ?? []).map((r) => r.id)),
+    business: new Set((businessIds ?? []).map((r) => r.id)),
+    employer: new Set((employerIds ?? []).map((r) => r.id)),
+  };
+  const incomplete = accounts.filter(
+    (a) => a.role === null || ((a.role === "lawyer" || a.role === "business" || a.role === "employer") && !hasRow[a.role].has(a.id)),
+  );
   const info = new Map(accounts.map((a) => [a.id, a]));
-  const counts: Record<string, number> = { advogados: 0, candidatos: 0, empresas: 0, negocios: 0, semTipo: 0 };
+  const counts: Record<string, number> = { advogados: 0, candidatos: 0, empresas: 0, negocios: 0, incompletas: incomplete.length };
   for (const a of accounts) {
     if (a.role === "lawyer") counts.advogados++;
     else if (a.role === "candidate") counts.candidatos++;
     else if (a.role === "employer") counts.empresas++;
     else if (a.role === "business") counts.negocios++;
-    else if (a.role !== "admin") counts.semTipo++;
   }
   const who = (id: string) => ({ email: info.get(id)?.email ?? "—", created_at: info.get(id)?.created_at ?? "", last_sign_in_at: info.get(id)?.last_sign_in_at ?? null });
   const verif = (s: string, suspended: string | null) =>
@@ -119,6 +133,22 @@ export default async function ContasPage({ searchParams }: { searchParams: Promi
         ["Vagas abertas", String(jobs.get(e.id) ?? 0)],
       ],
     }));
+  } else if (tab === "incompletas") {
+    const label: Record<string, string> = { lawyer: "Advogado(a)", business: "Negócio", employer: "Empresa" };
+    rows = incomplete.map((a) => ({
+      id: a.id,
+      kind: null,
+      suspended: false,
+      suspendedAt: null,
+      suspensionReason: null,
+      name: a.email,
+      email: a.email,
+      created_at: a.created_at,
+      last_sign_in_at: a.last_sign_in_at,
+      status: "incomplete",
+      statusLabel: "Cadastro incompleto",
+      details: [["Tipo escolhido", a.role ? (label[a.role] ?? a.role) : "Ainda não escolheu"]],
+    }));
   } else {
     const { data } = await supabase.from("businesses").select("*").order("created_at", { ascending: false }).limit(1000);
     rows = (data ?? []).map((b) => ({
@@ -157,11 +187,7 @@ export default async function ContasPage({ searchParams }: { searchParams: Promi
           </Link>
         ))}
       </nav>
-      {counts.semTipo > 0 && (
-        <p className="text-sm font-semibold">
-          {counts.semTipo} {counts.semTipo === 1 ? "conta ainda não escolheu" : "contas ainda não escolheram"} o tipo (criaram o login e pararam antes). Total: {accounts.length} contas.
-        </p>
-      )}
+      <p className="text-sm font-semibold">Total: {accounts.length} contas.</p>
       <AccountList key={tab} rows={rows} />
     </div>
   );
