@@ -111,3 +111,11 @@ export const BUSINESS_COMMITMENT_ITEMS = [
   "No meu relato, não cito o nome de pessoas nem acuso terceiros: conto só o que aconteceu com o meu negócio.",
   "Entendo que a equipe revisa o texto antes de publicar e que mudar o nome ou o relato exige nova revisão.",
 ] as const;
+
+export const REPORT_TOPICS = [
+  "Assédio eleitoral no trabalho",
+  "Demissão discriminatória",
+  "Ameaça ou intimidação",
+  "Boicote a negócio",
+  "Outro",
+] as const;

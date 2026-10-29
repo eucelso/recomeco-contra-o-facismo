@@ -23,6 +23,11 @@ export default function PoliticaPage() {
         <li>Perfil profissional: nome, cidade, áreas, experiência, disponibilidade e currículo opcional, para conectar você a vagas.</li>
         <li>Relato confidencial, se você quiser, guardado só para você, com seu consentimento.</li>
         <li>Dados do contratante (CNPJ ou CPF, responsável), para verificar quem contrata.</li>
+        <li>
+          Relatos anônimos (página Relatos): só o texto, o tipo e, se você quiser, estado e cidade. Não pedimos nome, e-mail nem telefone e não
+          guardamos seu IP. Para limitar abuso, usamos um código temporário calculado a partir da sua rede, que não fica ligado ao relato e é apagado
+          em até 24 horas. Cada relato é lido pela equipe antes de ser publicado.
+        </li>
       </ul>
       <h2 className={h2}>Quem vê seus dados</h2>
       <p>

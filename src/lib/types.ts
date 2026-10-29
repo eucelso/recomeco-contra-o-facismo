@@ -142,3 +142,12 @@ export type BusinessPublic = {
   hours: string | null;
   story: string;
 };
+
+export type ReportPublic = {
+  id: string;
+  story: string;
+  topic: string;
+  city: string | null;
+  state: string | null;
+  month: string | null;
+};

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ReportModeration } from "@/components/admin/report-moderation";
 import { ReviewButtons } from "@/components/admin/review-buttons";
 import { PageTitle } from "@/components/layout/app-shell";
 import { Alert } from "@/components/ui/alert";
@@ -31,6 +32,11 @@ export default async function VerificacoesPage() {
     .select("id,kind,document,display_name,category,city,state,neighborhood,whatsapp,instagram,website,story,created_at,verification_status")
     .in("verification_status", ["pending", "rejected"])
     .order("created_at");
+
+  const [{ data: reportsPending }, { data: reportsFlagged }] = await Promise.all([
+    supabase.from("public_reports").select("id,story,topic,city,state,created_at").eq("status", "pending").order("created_at"),
+    supabase.from("public_reports").select("id,story,topic,city,state,flags").eq("status", "approved").gt("flags", 0).order("flags", { ascending: false }),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -146,6 +152,44 @@ export default async function VerificacoesPage() {
           </li>
         ))}
       </ul>
+      <h2 className="border-b-3 border-foreground pb-1.5 text-[15px] font-black uppercase">Relatos anônimos</h2>
+      <Alert variant="accent">
+        <p>
+          Leia cada relato. Apague nomes de pessoas, empresas e lugares que identifiquem alguém, e qualquer acusação sem fato. O texto do campo é o que
+          será publicado. Rejeitar apaga o relato de vez.
+        </p>
+      </Alert>
+      {(reportsPending ?? []).length === 0 && <p className="border-3 border-dashed border-foreground p-6 text-center font-semibold">Nenhum relato novo.</p>}
+      <ul className="flex flex-col gap-4 pr-1.5">
+        {(reportsPending ?? []).map((r) => (
+          <li key={r.id} className="flex flex-col gap-3 border-3 border-foreground bg-card p-4 shadow-hard">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <strong className="text-base font-black">{r.topic}</strong>
+              <span className="text-xs font-bold">{[r.city, r.state].filter(Boolean).join(", ") || "Local não informado"}</span>
+            </div>
+            <ReportModeration id={r.id} story={r.story} flagged={false} />
+          </li>
+        ))}
+      </ul>
+      {(reportsFlagged ?? []).length > 0 && (
+        <>
+          <h2 className="border-b-3 border-foreground pb-1.5 text-[15px] font-black uppercase">Relatos denunciados</h2>
+          <ul className="flex flex-col gap-4 pr-1.5">
+            {(reportsFlagged ?? []).map((r) => (
+              <li key={r.id} className="flex flex-col gap-3 border-3 border-destructive bg-card p-4 shadow-hard">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <strong className="text-base font-black">{r.topic}</strong>
+                  <span className="text-xs font-bold">
+                    {r.flags} {r.flags === 1 ? "denúncia" : "denúncias"}
+                  </span>
+                </div>
+                <p className="whitespace-pre-line text-[15px] leading-relaxed">{r.story}</p>
+                <ReportModeration id={r.id} story={r.story} flagged />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

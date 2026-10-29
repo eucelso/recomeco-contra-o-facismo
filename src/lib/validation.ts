@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AREAS, AVAILABILITY, BUSINESS_CATEGORIES, CONTRACT_TYPES, EDUCATION, LEGAL_AREAS, MODALITIES, SHIFTS, STATES } from "./constants";
+import { AREAS, AVAILABILITY, BUSINESS_CATEGORIES, CONTRACT_TYPES, REPORT_TOPICS, EDUCATION, LEGAL_AREAS, MODALITIES, SHIFTS, STATES } from "./constants";
 
 const yearStr = z
   .string()
@@ -206,3 +206,17 @@ export const businessSchema = z
     if (!wa && !ig && !v.website)
       ctx.addIssue({ code: "custom", path: ["whatsapp"], message: "Informe pelo menos um contato: WhatsApp, Instagram ou site." });
   });
+
+// Para proteger terceiros e evitar spam, o relato não pode ter links, e-mails nem telefones.
+const CONTACT_PATTERN = /https?:\/\/|www\.|\S+@\S+\.\S+|\d{4,5}[\s.-]?\d{4}/i;
+
+export const reportSchema = z.object({
+  topic: z.enum(REPORT_TOPICS, { error: "Escolha o que aconteceu." }),
+  story: req("Conte o que aconteceu.")
+    .min(30, "Conte um pouco mais (pelo menos 30 caracteres).")
+    .max(1500, "O relato pode ter até 1.500 caracteres.")
+    .refine((s) => !CONTACT_PATTERN.test(s), "Não inclua links, e-mails nem telefones: para proteger as pessoas, o relato não pode ter contatos."),
+  state: z.enum(STATES).optional(),
+  city: z.string().trim().max(80).optional(),
+  website: z.string().optional(), // armadilha para robôs: pessoas não veem nem preenchem
+});
