@@ -37,13 +37,14 @@ export async function requireRole(role?: Role) {
   if (!session.user) redirect("/entrar");
   if (!session.role) redirect("/entrar/tipo");
   if (role && session.role !== role && session.role !== "admin") {
-    redirect(session.role === "employer" ? "/contratante" : "/painel");
+    redirect(homeFor(session.role));
   }
   return session as typeof session & { user: NonNullable<typeof session.user>; role: Role };
 }
 
 export function homeFor(role: Role | null) {
   if (role === "employer") return "/contratante";
+  if (role === "lawyer") return "/advogado";
   if (role === "admin") return "/admin/verificacoes";
   return "/painel";
 }

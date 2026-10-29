@@ -14,11 +14,11 @@ import {
 import type { Role } from "@/lib/types";
 import { initials } from "@/lib/utils";
 
-const ROLE_LABEL: Record<Role, string> = { candidate: "Candidato(a)", employer: "Contratante", admin: "Admin" };
+const ROLE_LABEL: Record<Role, string> = { candidate: "Candidato(a)", employer: "Contratante", lawyer: "Advogado(a)", admin: "Admin" };
 
 export function AccountMenu({ role, name, email }: { role: Role; name: string; email: string }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const home = role === "employer" ? "/contratante" : role === "admin" ? "/admin/verificacoes" : "/painel";
+  const home = role === "employer" ? "/contratante" : role === "lawyer" ? "/advogado" : role === "admin" ? "/admin/verificacoes" : "/painel";
 
   return (
     <>
@@ -63,6 +63,13 @@ export function AccountMenu({ role, name, email }: { role: Role; name: string; e
                 </Link>
               </DropdownMenuItem>
             </>
+          )}
+          {role === "lawyer" && (
+            <DropdownMenuItem asChild>
+              <Link href="/cadastro/advogado">
+                <User strokeWidth={2.4} aria-hidden="true" /> Editar meu perfil
+              </Link>
+            </DropdownMenuItem>
           )}
           {role === "candidate" && (
             <DropdownMenuItem asChild>

@@ -66,3 +66,25 @@ export const COMMITMENT_ITEMS = [
   "Oferecer condições de trabalho dentro da lei.",
   "Usar os dados dos candidatos só para o processo seletivo, conforme a LGPD.",
 ] as const;
+
+export const LEGAL_AREAS = [
+  "Trabalhista",
+  "Direitos humanos",
+  "Criminal",
+  "Civil e consumidor",
+  "Família",
+  "Previdenciário",
+  "Eleitoral",
+  "Discriminação e racismo",
+  "Violência contra a mulher",
+  "Direito digital e LGPD",
+] as const;
+
+export const LAWYER_COMMITMENT_VERSION = "2026-10-v1";
+
+export const LAWYER_COMMITMENT_ITEMS = [
+  "Atender de graça, ou por valor social combinado de forma transparente, as pessoas que me procurarem por aqui.",
+  "Manter o sigilo profissional e usar os dados de quem me procura só para o atendimento.",
+  "Não pedir nem insinuar vantagem em troca de atendimento, nem discriminar por posição política, religião, gênero, raça ou origem.",
+  "Manter minha inscrição na OAB regular e avisar a equipe se algo mudar.",
+] as const;

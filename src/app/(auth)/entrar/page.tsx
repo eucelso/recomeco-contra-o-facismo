@@ -14,7 +14,7 @@ export default async function EntrarPage({ searchParams }: { searchParams: Promi
   return (
     <LoginForm
       initialMode={sp.modo === "cadastro" ? "signup" : "login"}
-      initialType={sp.tipo === "employer" ? "employer" : "candidate"}
+      initialType={sp.tipo === "employer" ? "employer" : sp.tipo === "lawyer" ? "lawyer" : "candidate"}
       next={sp.next ?? null}
       error={sp.erro ? ERRORS[sp.erro] ?? null : null}
     />

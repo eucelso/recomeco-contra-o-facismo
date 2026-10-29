@@ -11,7 +11,7 @@ export async function routeAfterLogin(supabase: SupabaseClient, requestedType: s
   if (!user) return "/entrar?erro=sessao";
 
   let { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (!profile?.role && (requestedType === "candidate" || requestedType === "employer")) {
+  if (!profile?.role && (requestedType === "candidate" || requestedType === "employer" || requestedType === "lawyer")) {
     await supabase.rpc("set_my_role", { p_role: requestedType });
     ({ data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle());
   }
@@ -25,6 +25,10 @@ export async function routeAfterLogin(supabase: SupabaseClient, requestedType: s
   if (role === "employer") {
     const { data } = await supabase.from("employers").select("id").eq("id", user.id).maybeSingle();
     if (!data) return "/cadastro/contratante";
+  }
+  if (role === "lawyer") {
+    const { data } = await supabase.from("lawyers").select("id").eq("id", user.id).maybeSingle();
+    if (!data) return "/cadastro/advogado";
   }
   return safeNext(next) ?? homeFor(role);
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AREAS, AVAILABILITY, CONTRACT_TYPES, EDUCATION, MODALITIES, SHIFTS, STATES } from "./constants";
+import { AREAS, AVAILABILITY, CONTRACT_TYPES, EDUCATION, LEGAL_AREAS, MODALITIES, SHIFTS, STATES } from "./constants";
 
 const yearStr = z
   .string()
@@ -144,3 +144,31 @@ export const jobSchema = z
   });
 
 export const messageSchema = z.object({ body: z.string().trim().min(1).max(4000) });
+
+export const lawyerSchema = z
+  .object({
+    full_name: req("Diga seu nome completo.").min(3, "Nome muito curto.").max(120),
+    oab_state: z.enum(STATES, { error: "Escolha o estado da sua OAB." }),
+    oab_number: z
+      .string({ error: "Informe o número da OAB." })
+      .trim()
+      .regex(/^\d{1,7}$/, "Use só os números da OAB (ex.: 123456)."),
+    areas: z.array(z.enum(LEGAL_AREAS)).min(1, "Escolha pelo menos uma área.").max(5, "Escolha no máximo 5 áreas."),
+    city: req("Diga a cidade.").max(80),
+    state: z.enum(STATES, { error: "Escolha o estado." }),
+    online: z.boolean(),
+    contact_kind: z.enum(["whatsapp", "email"], { error: "Escolha como as pessoas vão falar com você." }),
+    contact_value: req("Informe o contato.").max(120),
+    bio: z.string().trim().max(500, "A apresentação pode ter até 500 caracteres.").optional(),
+    commitment: z.literal(true, { error: "Para aparecer na lista, é preciso aceitar o compromisso." }),
+  })
+  .superRefine((v, ctx) => {
+    if (v.contact_kind === "email") {
+      if (!z.email().safeParse(v.contact_value).success)
+        ctx.addIssue({ code: "custom", path: ["contact_value"], message: "Confira o e-mail (ex.: nome@dominio.com)." });
+    } else {
+      const d = onlyDigits(v.contact_value);
+      if (d.length < 10 || d.length > 13)
+        ctx.addIssue({ code: "custom", path: ["contact_value"], message: "Informe o WhatsApp com DDD (ex.: 11 91234-5678)." });
+    }
+  });

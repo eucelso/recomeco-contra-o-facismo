@@ -1,6 +1,6 @@
 import type { ContractType, Modality } from "./constants";
 
-export type Role = "candidate" | "employer" | "admin";
+export type Role = "candidate" | "employer" | "lawyer" | "admin";
 
 export type JobListing = {
   id: string;
@@ -112,4 +112,18 @@ export type Connection = {
   last_message: string | null;
   last_at: string;
   unread: number;
+};
+
+export type LawyerPublic = {
+  id: string;
+  full_name: string;
+  oab_state: string;
+  oab_number: string;
+  areas: string[];
+  city: string;
+  state: string;
+  online: boolean;
+  contact_kind: "whatsapp" | "email";
+  contact_value: string;
+  bio: string | null;
 };

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { Building, KeyRound, Lock, Mail, Search } from "lucide-react";
+import { Building, KeyRound, Lock, Mail, Scale, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { emailSchema, loginSchema, signupSchema } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 type Mode = "login" | "signup";
-type AccountType = "candidate" | "employer";
+type AccountType = "candidate" | "employer" | "lawyer";
 type FormValues = { email: string; password: string };
 
 // O link por e-mail só funciona com SMTP próprio (domínio verificado). Ligue com NEXT_PUBLIC_MAGIC_LINK=true.
@@ -220,6 +220,7 @@ export function LoginForm({
           </p>
           {typeCard("candidate", "Procuro trabalho", "Grátis. Anônimo até você aceitar.", Search, "bg-primary text-primary-foreground")}
           {typeCard("employer", "Quero contratar", "Empresa, cooperativa ou autônomo.", Building, "bg-secondary text-accent")}
+          {typeCard("lawyer", "Sou advogado(a)", "Voluntário(a). Conferimos a OAB.", Scale, "bg-accent text-accent-foreground")}
         </div>
       )}
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, GalleryHorizontalEnd, House, LayoutDashboard, MessageSquare, ShieldCheck, User, Users } from "lucide-react";
+import { Briefcase, GalleryHorizontalEnd, House, LayoutDashboard, MessageSquare, Scale, ShieldCheck, User, Users } from "lucide-react";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,11 @@ const EMPLOYER = [
   { href: "/contratante/candidatos", label: "Candidatos", Icon: Users },
   { href: "/mensagens", label: "Mensagens", Icon: MessageSquare },
 ];
+const LAWYER = [
+  { href: "/advogado", label: "Painel", Icon: LayoutDashboard },
+  { href: "/advogados", label: "Advogados", Icon: Scale },
+  { href: "/cadastro/advogado", label: "Perfil", Icon: User },
+];
 const ADMIN = [
   { href: "/admin/verificacoes", label: "Verificações", Icon: ShieldCheck },
   { href: "/vagas", label: "Vagas", Icon: Briefcase },
@@ -26,9 +31,9 @@ const ADMIN = [
 
 export function AppNav({ role, variant }: { role: Role; variant: "top" | "bottom" }) {
   const pathname = usePathname();
-  const items = role === "employer" ? EMPLOYER : role === "admin" ? ADMIN : CANDIDATE;
+  const items = role === "employer" ? EMPLOYER : role === "lawyer" ? LAWYER : role === "admin" ? ADMIN : CANDIDATE;
   const isActive = (href: string) =>
-    pathname === href || (href !== "/contratante" && href !== "/painel" && pathname.startsWith(href + "/"));
+    pathname === href || (href !== "/contratante" && href !== "/painel" && href !== "/advogado" && pathname.startsWith(href + "/"));
 
   if (variant === "top") {
     return (

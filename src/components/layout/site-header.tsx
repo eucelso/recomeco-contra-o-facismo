@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/#como-funciona", label: "Como funciona" },
   { href: "/vagas", label: "Vagas" },
   { href: "/direitos", label: "Seus direitos" },
+  { href: "/advogados", label: "Advogados" },
   { href: "/#empresas", label: "Para empresas" },
 ];
 
