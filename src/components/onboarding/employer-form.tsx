@@ -34,7 +34,7 @@ const SECTORS = [
   "Outro",
 ];
 
-function maskDoc(kind: "cnpj" | "cpf", raw: string) {
+export function maskDoc(kind: "cnpj" | "cpf", raw: string) {
   const d = onlyDigits(raw).slice(0, kind === "cnpj" ? 14 : 11);
   if (kind === "cpf") return d.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   return d

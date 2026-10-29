@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/vagas", label: "Vagas" },
   { href: "/direitos", label: "Seus direitos" },
   { href: "/advogados", label: "Advogados" },
+  { href: "/apoie", label: "Apoie negócios" },
   { href: "/#empresas", label: "Para empresas" },
 ];
 

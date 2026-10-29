@@ -88,3 +88,26 @@ export const LAWYER_COMMITMENT_ITEMS = [
   "Não pedir nem insinuar vantagem em troca de atendimento, nem discriminar por posição política, religião, gênero, raça ou origem.",
   "Manter minha inscrição na OAB regular e avisar a equipe se algo mudar.",
 ] as const;
+
+export const BUSINESS_CATEGORIES = [
+  "Restaurante e bar",
+  "Padaria e confeitaria",
+  "Mercado e hortifruti",
+  "Loja de roupas e acessórios",
+  "Beleza e estética",
+  "Saúde e bem-estar",
+  "Livraria e cultura",
+  "Oficina e serviços",
+  "Educação e cursos",
+  "Hospedagem e turismo",
+  "Artesanato e produção local",
+  "Outro",
+] as const;
+
+export const BUSINESS_COMMITMENT_VERSION = "2026-10-v1";
+
+export const BUSINESS_COMMITMENT_ITEMS = [
+  "As informações que publico são verdadeiras e eu sou a pessoa responsável pelo negócio.",
+  "No meu relato, não cito o nome de pessoas nem acuso terceiros: conto só o que aconteceu com o meu negócio.",
+  "Entendo que a equipe revisa o texto antes de publicar e que mudar o nome ou o relato exige nova revisão.",
+] as const;

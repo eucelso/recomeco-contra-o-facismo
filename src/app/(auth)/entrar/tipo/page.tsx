@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Building, Scale, Search } from "lucide-react";
+import { Building, Scale, Search, Store } from "lucide-react";
 import { getSession, homeFor } from "@/lib/auth";
 import { chooseRole } from "./actions";
 
@@ -41,6 +41,15 @@ export default async function TipoPage() {
           <span>
             <strong className="block text-base font-black uppercase">Sou advogado(a)</strong>
             <span className="text-sm font-medium">Quero ajudar como voluntário(a).</span>
+          </span>
+        </button>
+        <button name="role" value="business" className="flex items-center gap-3.5 border-3 border-foreground bg-card p-4 text-left shadow-hard">
+          <span className="flex size-12 items-center justify-center border-3 border-foreground bg-success text-success-foreground">
+            <Store className="size-6" strokeWidth={2.8} aria-hidden="true" />
+          </span>
+          <span>
+            <strong className="block text-base font-black uppercase">Tenho um negócio</strong>
+            <span className="text-sm font-medium">Fui prejudicado(a) e quero ser apoiado(a).</span>
           </span>
         </button>
       </form>

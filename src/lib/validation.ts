@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AREAS, AVAILABILITY, CONTRACT_TYPES, EDUCATION, LEGAL_AREAS, MODALITIES, SHIFTS, STATES } from "./constants";
+import { AREAS, AVAILABILITY, BUSINESS_CATEGORIES, CONTRACT_TYPES, EDUCATION, LEGAL_AREAS, MODALITIES, SHIFTS, STATES } from "./constants";
 
 const yearStr = z
   .string()
@@ -171,4 +171,38 @@ export const lawyerSchema = z
       if (d.length < 10 || d.length > 13)
         ctx.addIssue({ code: "custom", path: ["contact_value"], message: "Informe o WhatsApp com DDD (ex.: 11 91234-5678)." });
     }
+  });
+
+const optionalText = (max: number) => z.string().trim().max(max).optional();
+
+export const businessSchema = z
+  .object({
+    kind: z.enum(["cnpj", "cpf"]),
+    document: req("Informe o documento."),
+    display_name: req("Diga o nome do negócio.").max(120),
+    category: z.enum(BUSINESS_CATEGORIES, { error: "Escolha a categoria." }),
+    city: req("Diga a cidade.").max(80),
+    state: z.enum(STATES, { error: "Escolha o estado." }),
+    neighborhood: optionalText(80),
+    address: optionalText(160),
+    whatsapp: optionalText(20),
+    instagram: optionalText(31),
+    website: optionalText(200),
+    hours: optionalText(160),
+    story: req("Conte o que aconteceu.").min(20, "Conte um pouco mais (pelo menos 20 caracteres).").max(500, "O relato pode ter até 500 caracteres."),
+    commitment: z.literal(true, { error: "Para aparecer na lista, é preciso aceitar o compromisso." }),
+  })
+  .superRefine((v, ctx) => {
+    const ok = v.kind === "cnpj" ? validCNPJ(v.document) : validCPF(v.document);
+    if (!ok) ctx.addIssue({ code: "custom", path: ["document"], message: v.kind === "cnpj" ? "CNPJ inválido. Confira os números." : "CPF inválido. Confira os números." });
+    const wa = v.whatsapp ? onlyDigits(v.whatsapp) : "";
+    if (v.whatsapp && (wa.length < 10 || wa.length > 13))
+      ctx.addIssue({ code: "custom", path: ["whatsapp"], message: "Informe o WhatsApp com DDD (ex.: 11 91234-5678)." });
+    const ig = v.instagram?.replace(/^@/, "") ?? "";
+    if (ig && !/^[A-Za-z0-9._]{1,30}$/.test(ig))
+      ctx.addIssue({ code: "custom", path: ["instagram"], message: "Use só o nome de usuário, sem link (ex.: padariadobairro)." });
+    if (v.website && !/^https?:\/\/[^\s]+\.[^\s]+$/.test(v.website))
+      ctx.addIssue({ code: "custom", path: ["website"], message: "Comece com https:// (ex.: https://meusite.com.br)." });
+    if (!wa && !ig && !v.website)
+      ctx.addIssue({ code: "custom", path: ["whatsapp"], message: "Informe pelo menos um contato: WhatsApp, Instagram ou site." });
   });

@@ -10,13 +10,14 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const uid = user.id;
-  const [profile, candidate, experiences, report, employer, lawyer, jobs, applications, contacts, messages, consents] = await Promise.all([
+  const [profile, candidate, experiences, report, employer, lawyer, business, jobs, applications, contacts, messages, consents] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
     supabase.from("candidates").select("*").eq("id", uid).maybeSingle(),
     supabase.from("candidate_experiences").select("*").eq("candidate_id", uid),
     supabase.from("confidential_reports").select("*").eq("candidate_id", uid).maybeSingle(),
     supabase.from("employers").select("*").eq("id", uid).maybeSingle(),
     supabase.from("lawyers").select("*").eq("id", uid).maybeSingle(),
+    supabase.from("businesses").select("*").eq("id", uid).maybeSingle(),
     supabase.from("jobs").select("*").eq("employer_id", uid),
     supabase.from("applications").select("*").eq("candidate_id", uid),
     supabase.from("contact_requests").select("*").or(`employer_id.eq.${uid},candidate_id.eq.${uid}`),
@@ -33,6 +34,7 @@ export async function GET() {
     confidential_report: report.data,
     employer: employer.data,
     lawyer: lawyer.data,
+    business: business.data,
     jobs: jobs.data,
     applications: applications.data,
     contact_requests: contacts.data,

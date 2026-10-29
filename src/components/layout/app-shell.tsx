@@ -14,6 +14,10 @@ async function accountName(role: Role) {
     const { data } = await supabase.from("employers").select("display_name").eq("id", user.id).maybeSingle();
     if (data?.display_name) return { name: data.display_name, email };
   }
+  if (role === "business") {
+    const { data } = await supabase.from("businesses").select("display_name").eq("id", user.id).maybeSingle();
+    if (data?.display_name) return { name: data.display_name, email };
+  }
   if (role === "lawyer") {
     const { data } = await supabase.from("lawyers").select("full_name").eq("id", user.id).maybeSingle();
     if (data?.full_name) return { name: data.full_name, email };

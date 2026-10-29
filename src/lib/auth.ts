@@ -45,6 +45,7 @@ export async function requireRole(role?: Role) {
 export function homeFor(role: Role | null) {
   if (role === "employer") return "/contratante";
   if (role === "lawyer") return "/advogado";
+  if (role === "business") return "/negocio";
   if (role === "admin") return "/admin/verificacoes";
   return "/painel";
 }

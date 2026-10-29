@@ -26,6 +26,12 @@ export default async function VerificacoesPage() {
     .in("verification_status", ["pending", "rejected"])
     .order("created_at");
 
+  const { data: businesses } = await supabase
+    .from("businesses")
+    .select("id,kind,document,display_name,category,city,state,neighborhood,whatsapp,instagram,website,story,created_at,verification_status")
+    .in("verification_status", ["pending", "rejected"])
+    .order("created_at");
+
   return (
     <div className="flex flex-col gap-6">
       <PageTitle kicker="Admin">Verificações</PageTitle>
@@ -102,6 +108,41 @@ export default async function VerificacoesPage() {
               <dd>{new Date(l.created_at).toLocaleDateString("pt-BR")}</dd>
             </dl>
             <ReviewButtons id={l.id} kind="lawyer" />
+          </li>
+        ))}
+      </ul>
+      <h2 className="border-b-3 border-foreground pb-1.5 text-[15px] font-black uppercase">Negócios prejudicados</h2>
+      <Alert variant="accent">
+        <p>
+          Confira o documento na Receita Federal e se o negócio existe no endereço informado. Leia o relato: se citar nome de pessoa ou acusar
+          alguém, reprove com o motivo para a pessoa corrigir. A aprovação publica o texto e os contatos em /apoie.
+        </p>
+      </Alert>
+      {(businesses ?? []).length === 0 && <p className="border-3 border-dashed border-foreground p-6 text-center font-semibold">Fila vazia.</p>}
+      <ul className="flex flex-col gap-4 pr-1.5">
+        {(businesses ?? []).map((b) => (
+          <li key={b.id} className="flex flex-col gap-3 border-3 border-foreground bg-card p-4 shadow-hard">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <strong className="text-lg font-black">{b.display_name}</strong>
+              <span className="text-xs font-bold uppercase">{b.verification_status === "rejected" ? "Reprovado antes" : "Pendente"}</span>
+            </div>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+              <dt className="font-black uppercase">{b.kind}</dt>
+              <dd className="font-mono">{formatDoc(b.kind, b.document)}</dd>
+              <dt className="font-black uppercase">Categ.</dt>
+              <dd>{b.category}</dd>
+              <dt className="font-black uppercase">Local</dt>
+              <dd>
+                {[b.neighborhood, `${b.city}, ${b.state}`].filter(Boolean).join(" · ")}
+              </dd>
+              <dt className="font-black uppercase">Contato</dt>
+              <dd className="break-all">{[b.whatsapp, b.instagram && `@${b.instagram}`, b.website].filter(Boolean).join(" · ")}</dd>
+              <dt className="font-black uppercase">Relato</dt>
+              <dd className="whitespace-pre-line">{b.story}</dd>
+              <dt className="font-black uppercase">Desde</dt>
+              <dd>{new Date(b.created_at).toLocaleDateString("pt-BR")}</dd>
+            </dl>
+            <ReviewButtons id={b.id} kind="business" />
           </li>
         ))}
       </ul>
