@@ -9,14 +9,24 @@ export function hasSupabaseEnv() {
   return Boolean(SUPABASE_URL && SUPABASE_KEY);
 }
 
-/** Uma chamada por requisição (deduplicada com React cache). */
+export type SessionUser = { id: string; email: string | undefined; user_metadata: Record<string, unknown> };
+
+/**
+ * Uma chamada por requisição (deduplicada com React cache).
+ * A identidade vem do JWT validado localmente (getClaims, chaves assimétricas): sem ida ao Auth do Supabase.
+ * Ações sensíveis (ex.: excluir conta) continuam usando getUser.
+ */
 export const getSession = cache(async function getSession() {
   if (!hasSupabaseEnv()) return { supabase: null as never, user: null, role: null as Role | null };
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { supabase, user: null, role: null as Role | null };
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (!claims?.sub) return { supabase, user: null, role: null as Role | null };
+  const user: SessionUser = {
+    id: claims.sub,
+    email: claims.email,
+    user_metadata: (claims.user_metadata as Record<string, unknown> | undefined) ?? {},
+  };
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   return { supabase, user, role: (profile?.role ?? null) as Role | null };
 });

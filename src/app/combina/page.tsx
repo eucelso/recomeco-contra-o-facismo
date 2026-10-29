@@ -24,11 +24,34 @@ function Header({ kicker, text }: { kicker: string; text: string }) {
 
 export default async function CombinaPage({ searchParams }: { searchParams: Promise<{ vaga?: string }> }) {
   const { supabase, user, role } = await requireRole();
-  const { data: conns } = await supabase.rpc("combina_connections", { p_limit: 20 });
+
+  // Dispara de uma vez tudo o que não depende de outra resposta (cada ida ao banco custa uma espera).
+  const connsQ = supabase.rpc("combina_connections", { p_limit: 20 });
+  const empQ =
+    role === "employer"
+      ? Promise.all([
+          supabase.from("employers").select("display_name,verification_status").eq("id", user.id).maybeSingle(),
+          supabase
+            .from("jobs")
+            .select("id,title,city")
+            .eq("employer_id", user.id)
+            .eq("status", "active")
+            .order("published_at", { ascending: false }),
+        ])
+      : null;
+  const candQ =
+    role === "employer"
+      ? null
+      : Promise.all([
+          supabase.from("candidates").select("full_name,preferred_name,city,state,areas,modalities,completed_at").eq("id", user.id).maybeSingle(),
+          supabase.rpc("combina_candidate_feed", { p_limit: 20 }),
+          supabase.from("applications").select("id", { count: "exact", head: true }).eq("candidate_id", user.id).in("status", ["sent", "viewed"]),
+        ]);
+  const { data: conns } = await connsQ;
   const connections = (conns ?? []) as Connection[];
 
-  if (role === "employer") {
-    const { data: emp } = await supabase.from("employers").select("display_name,verification_status").eq("id", user.id).maybeSingle();
+  if (empQ) {
+    const [{ data: emp }, { data: jobs }] = await empQ;
     if (!emp) redirect("/cadastro/contratante");
     if (emp.verification_status !== "verified") {
       return (
@@ -45,12 +68,6 @@ export default async function CombinaPage({ searchParams }: { searchParams: Prom
         </div>
       );
     }
-    const { data: jobs } = await supabase
-      .from("jobs")
-      .select("id,title,city")
-      .eq("employer_id", user.id)
-      .eq("status", "active")
-      .order("published_at", { ascending: false });
     if (!jobs?.length) {
       return (
         <div className="mx-auto max-w-xl">
@@ -77,17 +94,8 @@ export default async function CombinaPage({ searchParams }: { searchParams: Prom
   }
 
   // Candidato
-  const { data: me } = await supabase
-    .from("candidates")
-    .select("full_name,preferred_name,city,state,areas,modalities,completed_at")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [{ data: me }, { data: jobs, error }, { count }] = await candQ!;
   if (!me?.completed_at) redirect("/cadastro/candidato");
-
-  const [{ data: jobs, error }, { count }] = await Promise.all([
-    supabase.rpc("combina_candidate_feed", { p_limit: 20 }),
-    supabase.from("applications").select("id", { count: "exact", head: true }).eq("candidate_id", user.id).in("status", ["sent", "viewed"]),
-  ]);
   const filterSummary = [
     `${me.city}/${me.state}`,
     ...(me.areas as string[]),

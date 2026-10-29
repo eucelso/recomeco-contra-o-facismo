@@ -3,30 +3,22 @@ import Link from "next/link";
 import { InitialsBox } from "@/components/brand/initials-box";
 import { PageTitle } from "@/components/layout/app-shell";
 import { requireRole } from "@/lib/auth";
+import type { Connection } from "@/lib/types";
 import { timeAgo } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Mensagens" };
 
 export default async function MensagensPage() {
-  const { supabase, user } = await requireRole();
-  const { data: contacts } = await supabase
-    .from("contact_requests")
-    .select("id,created_at,responded_at")
-    .eq("status", "accepted")
-    .or(`employer_id.eq.${user.id},candidate_id.eq.${user.id}`)
-    .order("responded_at", { ascending: false });
-
-  const rows = await Promise.all(
-    (contacts ?? []).map(async (c) => {
-      const [{ data: peer }, { data: last }, { count }] = await Promise.all([
-        supabase.rpc("conversation_peer", { p_contact: c.id }),
-        supabase.from("messages").select("body,created_at,sender_id").eq("contact_id", c.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-        supabase.from("messages").select("id", { count: "exact", head: true }).eq("contact_id", c.id).neq("sender_id", user.id).is("read_at", null),
-      ]);
-      return { id: c.id, peer: peer as { name: string } | null, last, unread: count ?? 0, at: last?.created_at ?? c.responded_at ?? c.created_at };
-    }),
-  );
-  rows.sort((a, b) => (a.at < b.at ? 1 : -1));
+  const { supabase } = await requireRole();
+  // Uma consulta só (nome, última mensagem e não lidas), em vez de 3 por conversa.
+  const { data } = await supabase.rpc("combina_connections", { p_limit: 100 });
+  const rows = ((data ?? []) as Connection[]).map((c) => ({
+    id: c.contact_id,
+    name: c.peer_name,
+    last: c.last_message,
+    unread: c.unread,
+    at: c.last_at,
+  }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,11 +31,11 @@ export default async function MensagensPage() {
           {rows.map((r) => (
             <li key={r.id}>
               <Link href={`/mensagens/${r.id}`} className="flex items-center gap-3 border-3 border-foreground bg-card p-3 shadow-hard-sm">
-                <InitialsBox name={r.peer?.name ?? "?"} className="size-11" />
+                <InitialsBox name={r.name || "?"} className="size-11" />
                 <span className="min-w-0 flex-1">
-                  <strong className="block text-[15px] font-black">{r.peer?.name ?? "Conversa"}</strong>
+                  <strong className="block text-[15px] font-black">{r.name || "Conversa"}</strong>
                   <span className="block truncate text-[13px]">
-                    {r.last ? `${r.last.sender_id === user.id ? "Você: " : ""}${r.last.body}` : "Diga olá"}
+                    {r.last ?? "Diga olá"}
                   </span>
                 </span>
                 <span className="flex flex-col items-end gap-1">

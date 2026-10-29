@@ -13,14 +13,13 @@ export const metadata: Metadata = { title: "Meu painel" };
 
 export default async function PainelPage() {
   const { supabase, user } = await requireRole("candidate");
-  const { data: me } = await supabase.from("candidates").select("full_name,preferred_name,completed_at,anonymous").eq("id", user.id).maybeSingle();
-  if (!me?.completed_at) redirect("/cadastro/candidato");
-
-  const [{ data: contacts }, { data: apps }, { data: report }] = await Promise.all([
+  const [{ data: me }, { data: contacts }, { data: apps }, { data: report }] = await Promise.all([
+    supabase.from("candidates").select("full_name,preferred_name,completed_at,anonymous").eq("id", user.id).maybeSingle(),
     supabase.from("contact_requests").select("id,employer_id,job_id,message,status,created_at").eq("candidate_id", user.id).order("created_at", { ascending: false }),
     supabase.from("applications").select("id,status,created_at,job_id").eq("candidate_id", user.id).order("created_at", { ascending: false }),
     supabase.from("confidential_reports").select("candidate_id").eq("candidate_id", user.id).maybeSingle(),
   ]);
+  if (!me?.completed_at) redirect("/cadastro/candidato");
 
   const employerIds = [...new Set((contacts ?? []).map((c) => c.employer_id))];
   const jobIds = [...new Set([...(contacts ?? []).map((c) => c.job_id), ...(apps ?? []).map((a) => a.job_id)].filter(Boolean) as string[])];
