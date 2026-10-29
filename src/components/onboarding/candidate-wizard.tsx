@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { AREAS, AVAILABILITY, CONTRACT_TYPES, EDUCATION, MODALITIES, SHIFTS, STATES, type ContractType, type Modality } from "@/lib/constants";
+import { clearStep4Draft, readStep4Draft, rememberReturn, writeStep4Draft } from "@/lib/signup-draft";
 import { createClient } from "@/lib/supabase/client";
 import { candidateStep1, candidateStep2, candidateStep3, candidateStep4 } from "@/lib/validation";
 
@@ -594,6 +595,39 @@ function Step4({ data, onBack }: { data: CandidateDraft; onBack: () => void }) {
   });
   const reportLen = (form.watch("report") ?? "").length;
 
+  // Quem sai para ler "Seus direitos" e volta não perde o relato nem o arquivo já enviado (rascunho só nesta aba).
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    const d = readStep4Draft(data.userId);
+    if (d) {
+      form.setValue("report", d.report);
+      form.setValue("report_consent", d.report_consent);
+      form.setValue("anonymous", d.anonymous);
+      if (d.resumePath) {
+        setResumePath(d.resumePath);
+        setFileInfo(d.file);
+      }
+    }
+    setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (!hydrated) return;
+    const save = () => {
+      const v = form.getValues();
+      writeStep4Draft(data.userId, {
+        report: v.report ?? "",
+        report_consent: Boolean(v.report_consent),
+        anonymous: v.anonymous !== false,
+        resumePath,
+        file: fileInfo,
+      });
+    };
+    save();
+    const sub = form.watch(save);
+    return () => sub.unsubscribe();
+  }, [hydrated, resumePath, fileInfo, form, data.userId]);
+
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -623,6 +657,7 @@ function Step4({ data, onBack }: { data: CandidateDraft; onBack: () => void }) {
     start(async () => {
       const r = await finishOnboarding(v, resumePath);
       if (!r.ok) return void toast.error(r.error);
+      clearStep4Draft(data.userId);
       toast.success("Cadastro concluído. Bem-vinda(o)! Veja as vagas que combinam com você.");
       router.push("/combina");
       router.refresh();
@@ -726,7 +761,7 @@ function Step4({ data, onBack }: { data: CandidateDraft; onBack: () => void }) {
                 </FormItem>
               )}
             />
-            <Link href="/direitos" className="text-sm font-extrabold text-[#E8A317] underline">
+            <Link href="/direitos" onClick={() => rememberReturn("/cadastro/candidato")} className="text-sm font-extrabold text-[#E8A317] underline">
               Ver como guardar provas e onde denunciar
             </Link>
           </section>

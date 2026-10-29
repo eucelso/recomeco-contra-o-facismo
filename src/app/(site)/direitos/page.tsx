@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, CircleAlert } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ReturnToSignup } from "@/components/layout/return-to-signup";
 import { Button } from "@/components/ui/button";
 import { OFFICIAL_CHANNELS } from "@/lib/channels";
 
@@ -146,6 +147,7 @@ export default function DireitosPage() {
           </Button>
         </div>
       </div>
+      <ReturnToSignup />
     </>
   );
 }
