@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { APPLICATION_STATUS } from "@/lib/constants";
 import { Alert } from "@/components/ui/alert";
+import { AccountDangerZone } from "@/components/privacy/account-danger-zone";
 import { requireRole } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Meu painel" };
@@ -147,6 +148,7 @@ export default async function PainelPage() {
           Configurar privacidade
         </Link>
       </section>
+      <AccountDangerZone role="candidate" />
     </div>
   );
 }

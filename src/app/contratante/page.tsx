@@ -9,6 +9,7 @@ import { SectionTitle } from "@/components/layout/app-shell";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AccountDangerZone } from "@/components/privacy/account-danger-zone";
 import { APPLICATION_STATUS, MODALITIES } from "@/lib/constants";
 import { requireEmployer } from "@/lib/employer";
 
@@ -164,6 +165,7 @@ export default async function ContratantePage() {
           </ul>
         </section>
       )}
+      <AccountDangerZone role="employer" />
     </div>
   );
 }

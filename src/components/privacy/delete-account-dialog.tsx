@@ -7,8 +7,29 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { Role } from "@/lib/types";
 
-export function DeleteAccountDialog() {
+const WHAT: Partial<Record<Role, { summary: string; items: string[] }>> = {
+  candidate: {
+    summary: "Apaga perfil, currículo, relato e mensagens.",
+    items: ["Perfil profissional e currículo", "Relato confidencial", "Candidaturas, convites e mensagens"],
+  },
+  employer: {
+    summary: "Apaga a empresa, as vagas e as mensagens.",
+    items: ["Dados da empresa e o selo de verificação", "Todas as suas vagas e as candidaturas recebidas", "Convites e mensagens"],
+  },
+  lawyer: {
+    summary: "Apaga seu cadastro e tira você da lista de advogados.",
+    items: ["Seu cadastro de advogado(a), com OAB e contato", "Sua aparição na lista pública", "Seus consentimentos registrados"],
+  },
+  business: {
+    summary: "Apaga o negócio e o relato publicado em Apoie.",
+    items: ["O cadastro do negócio, com documento e contatos", "O negócio e o relato na lista pública Apoie", "Seus consentimentos registrados"],
+  },
+};
+
+export function DeleteAccountDialog({ role = "candidate" }: { role?: Role }) {
+  const what = WHAT[role] ?? WHAT.candidate!;
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -22,7 +43,7 @@ export function DeleteAccountDialog() {
         </span>
         <span className="flex-1">
           <strong className="block text-[15px] font-black uppercase">Excluir conta e dados</strong>
-          <span className="text-[13px] font-medium">Apaga perfil, currículo, relato e mensagens.</span>
+          <span className="text-[13px] font-medium">{what.summary}</span>
         </span>
       </DialogTrigger>
       <DialogContent tone="destructive" role="alertdialog">
@@ -31,7 +52,7 @@ export function DeleteAccountDialog() {
           <DialogDescription>Isso não pode ser desfeito. Apagamos de vez:</DialogDescription>
         </DialogHeader>
         <ul className="flex flex-col gap-1.5 text-sm font-bold">
-          {["Perfil profissional e currículo", "Relato confidencial", "Candidaturas, convites e mensagens"].map((t) => (
+          {what.items.map((t) => (
             <li key={t} className="flex items-center gap-2">
               <span className="size-2 bg-destructive" aria-hidden="true" />
               {t}

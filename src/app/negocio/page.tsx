@@ -6,6 +6,7 @@ import { VisibleSwitch } from "@/components/business/visible-switch";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AccountDangerZone } from "@/components/privacy/account-danger-zone";
 import { requireBusiness } from "@/lib/business";
 
 export const metadata: Metadata = { title: "Meu negócio" };
@@ -67,6 +68,7 @@ export default async function NegocioPage() {
         </Button>
       </div>
       <p className="text-xs font-medium">Se mudar o nome, o documento ou o relato, o texto novo passa por revisão e o negócio sai da lista até ser aprovado de novo.</p>
+      <AccountDangerZone role="business" />
     </div>
   );
 }

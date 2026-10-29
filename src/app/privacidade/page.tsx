@@ -117,7 +117,7 @@ export default async function PrivacidadePage() {
             ))}
           </ul>
         </details>
-        <DeleteAccountDialog />
+        {role !== "admin" && <DeleteAccountDialog role={role} />}
       </section>
 
       <form action="/auth/sair" method="post" className="pr-1.5">

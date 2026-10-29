@@ -6,6 +6,7 @@ import { AcceptingSwitch } from "@/components/lawyer/accepting-switch";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AccountDangerZone } from "@/components/privacy/account-danger-zone";
 import { requireLawyer } from "@/lib/lawyer";
 
 export const metadata: Metadata = { title: "Meu painel" };
@@ -70,6 +71,7 @@ export default async function AdvogadoPage() {
         </Button>
       </div>
       <p className="text-xs font-medium">Se mudar a OAB, a verificação recomeça e você sai da lista até ser aprovado de novo.</p>
+      <AccountDangerZone role="lawyer" />
     </div>
   );
 }
