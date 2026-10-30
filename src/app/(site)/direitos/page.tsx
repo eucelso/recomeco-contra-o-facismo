@@ -31,6 +31,7 @@ const FAQ = [
   ["Posso denunciar sem me identificar?", "No Ministério Público do Trabalho, sim: você pode pedir sigilo. Para entrar com ação na Justiça do Trabalho, é preciso se identificar."],
   ["O Recomeço faz a denúncia por mim?", "Não. A gente não recebe nem publica denúncias, e não mantém listas de empresas ou pessoas. Só mostra os canais oficiais."],
   ["E se eu ainda estiver trabalhando lá?", "Guarde as provas com discrição e procure o sindicato ou o MPT. Retaliar quem denuncia também é ilegal."],
+  ["Existem dois Pardal. Qual uso?", "Para assédio eleitoral e demissão por causa do voto, use o MPT Pardal, do Ministério Público do Trabalho. O Pardal do TSE é outro aplicativo, da Justiça Eleitoral, para propaganda eleitoral irregular."],
   ["Preciso de advogado?", "Para falar com o MPT, não. Para a ação trabalhista, a Defensoria Pública e o sindicato podem orientar sem custo."],
 ];
 

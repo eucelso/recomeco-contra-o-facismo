@@ -1,8 +1,8 @@
 export const OFFICIAL_CHANNELS = [
   {
-    name: "Ministério Público do Trabalho",
-    short: "Denúncia online, pode ser sigilosa",
-    long: "Denúncia online pelo site, com opção de sigilo. Investiga a empresa e pode agir em defesa de todos os trabalhadores.",
+    name: "Ministério Público do Trabalho · MPT Pardal",
+    short: "Denúncia pelo app ou site, pode ser sigilosa",
+    long: "Denuncie pelo aplicativo MPT Pardal ou pelo site, com opção de sigilo. Leve fotos, prints, áudios ou vídeos e a descrição dos fatos, que você pode montar no seu dossiê aqui. Investiga a empresa e pode agir em defesa de todos os trabalhadores.",
     url: "https://mpt.mp.br",
   },
   {
@@ -18,9 +18,9 @@ export const OFFICIAL_CHANNELS = [
     url: "https://www.dpu.def.br",
   },
   {
-    name: "Ministério Público Eleitoral · Pardal",
-    short: "Coação do voto no período eleitoral",
-    long: "Para coação do voto durante o período eleitoral. O aplicativo Pardal é do TSE.",
+    name: "Pardal do TSE (Justiça Eleitoral)",
+    short: "Propaganda eleitoral irregular, só no período eleitoral",
+    long: "Serve para denunciar propaganda eleitoral irregular. Não é o canal para denunciar uma empresa por assédio eleitoral: para isso, use o MPT Pardal.",
     url: "https://www.tse.jus.br",
   },
 ] as const;
