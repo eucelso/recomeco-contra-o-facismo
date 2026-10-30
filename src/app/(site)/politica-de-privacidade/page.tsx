@@ -25,6 +25,13 @@ export default function PoliticaPage() {
           em até 24 horas. Cada relato é lido pela equipe antes de ser publicado.
         </li>
       </ul>
+      <h2 className={h2}>Estatísticas de uso</h2>
+      <p>
+        Usamos o Vercel Web Analytics para saber quais páginas são mais visitadas e melhorar o site. Ele não usa cookies, não cria perfil de quem
+        visita e não nos mostra quem você é: registra apenas a página visitada, o país, o navegador e o tipo de aparelho, de forma agregada. Não
+        registramos as visitas às páginas do dossiê, de privacidade e de direitos, nem os parâmetros de endereço (como códigos e identificadores).
+        Nenhum conteúdo do que você escreve vai para essas estatísticas.
+      </p>
       <h2 className={h2}>Quem vê seus dados</h2>
       <p>
         Contratantes verificados veem só o perfil anônimo (habilidades, experiência, região). Nome, contato e currículo aparecem apenas
