@@ -76,6 +76,13 @@ const STORIES = [
 
 export default async function LandingPage() {
   const stats = await getStats();
+  // Um número pequeno de contratações soa fraco (ou expõe quem foi contratado): só aparece a partir de 2.
+  const numbers = [
+    { v: stats?.active_jobs, l: "vagas abertas agora" },
+    ...((stats?.hires ?? 0) > 1 ? [{ v: stats?.hires, l: "pessoas contratadas" }] : []),
+    { v: stats?.verified_employers, l: "empresas comprometidas" },
+    { v: stats?.cities, l: "cidades com vagas" },
+  ];
 
   return (
     <>
@@ -166,13 +173,8 @@ export default async function LandingPage() {
       {/* Números */}
       <section className="border-y-3 border-foreground bg-primary text-primary-foreground">
         <div className="container flex flex-col gap-6 py-10 sm:py-16">
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4">
-            {[
-              { v: stats?.active_jobs, l: "vagas abertas agora" },
-              { v: stats?.hires, l: "pessoas contratadas" },
-              { v: stats?.verified_employers, l: "empresas comprometidas" },
-              { v: stats?.cities, l: "cidades com vagas" },
-            ].map((s) => (
+          <dl className={`grid grid-cols-2 gap-x-4 gap-y-6 ${numbers.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
+            {numbers.map((s) => (
               <div key={s.l} className="flex flex-col-reverse gap-1 border-l-[6px] border-accent pl-3 sm:pl-5">
                 <dt className="text-[13px] font-extrabold uppercase tracking-wide sm:text-[17px]">{s.l}</dt>
                 <dd className="font-display text-[44px] leading-none sm:text-[72px]">{fmt(s.v)}</dd>
