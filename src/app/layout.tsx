@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { AmbientAudio } from "@/components/audio/ambient-audio";
+import { SiteAnalytics } from "@/components/analytics";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <AmbientAudio />
         <Toaster />
+        <SiteAnalytics />
       </body>
     </html>
   );
