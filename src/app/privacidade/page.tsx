@@ -81,9 +81,9 @@ export default async function PrivacidadePage() {
           </h2>
           <p className="text-sm text-[#E6DAC2]">
             {report
-              ? `Guardado em ${new Date(report.updated_at ?? report.created_at).toLocaleDateString("pt-BR")} · nunca compartilhado.`
+              ? `Guardado em ${new Date(report.updated_at ?? report.created_at).toLocaleDateString("pt-BR")} · só compartilhado com quem você escolher.`
               : (factsCount ?? 0) > 0
-                ? "Você tem fatos guardados · nunca compartilhado."
+                ? "Você tem fatos guardados · só compartilhados com quem você escolher."
                 : "Você não guardou nenhum relato."}
           </p>
           <ReportActions hasReport={Boolean(report) || (factsCount ?? 0) > 0} />

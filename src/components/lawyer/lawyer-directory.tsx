@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { MessageCircle, Mail, Monitor } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LEGAL_AREAS, STATES } from "@/lib/constants";
@@ -96,6 +97,12 @@ export function LawyerDirectory({ lawyers }: { lawyers: LawyerPublic[] }) {
                 {l.contact_kind === "whatsapp" ? <MessageCircle className="size-5" aria-hidden="true" /> : <Mail className="size-5" aria-hidden="true" />}
                 {l.contact_kind === "whatsapp" ? "Chamar no WhatsApp" : "Enviar e-mail"}
               </a>
+              <Link
+                href={`/painel/dossie/compartilhar?advogado=${l.id}`}
+                className="inline-flex min-h-11 items-center justify-center border-3 border-foreground px-4 py-2 text-center text-[13px] font-black uppercase"
+              >
+                Sou trabalhador: compartilhar meu dossiê
+              </Link>
             </li>
           ))}
         </ul>

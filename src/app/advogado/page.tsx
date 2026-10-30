@@ -7,13 +7,31 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AccountDangerZone } from "@/components/privacy/account-danger-zone";
+import { ReceivedDossiers } from "@/components/lawyer/received-dossiers";
+import type { ReceivedShare, SharePayload } from "@/lib/dossier-share";
+import { ctxShare, openJson } from "@/lib/dossier-crypto";
 import { requireLawyer } from "@/lib/lawyer";
 
 export const metadata: Metadata = { title: "Meu painel" };
 
 export default async function AdvogadoPage() {
-  const { lawyer } = await requireLawyer();
+  const { lawyer, supabase } = await requireLawyer();
   const status = lawyer.verification_status;
+  const { data: received } = status === "verified" ? await supabase.rpc("lawyer_dossiers") : { data: [] };
+  // O banco entrega o conteúdo cifrado; o nome só é lido aqui, no servidor, e só enquanto o acesso vale.
+  const shares: ReceivedShare[] = ((received ?? []) as { id: string; created_at: string; expires_at: string; active: boolean; payload_enc: string | null; first_viewed_at: string | null; renewal_requested_at: string | null }[]).map(
+    ({ payload_enc, ...r }) => {
+      let p: Pick<SharePayload, "worker_name" | "contact_kind" | "contact_value"> | null = null;
+      if (payload_enc) {
+        try {
+          p = openJson<SharePayload>(ctxShare(r.id), payload_enc);
+        } catch {
+          p = null;
+        }
+      }
+      return { ...r, worker_name: p?.worker_name ?? null, contact_kind: p?.contact_kind ?? null, contact_value: p?.contact_value ?? null };
+    },
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -64,6 +82,8 @@ export default async function AdvogadoPage() {
           </Button>
         </>
       )}
+
+      {status === "verified" && <ReceivedDossiers shares={shares} />}
 
       <div className="pr-1.5">
         <Button asChild variant="ghost">

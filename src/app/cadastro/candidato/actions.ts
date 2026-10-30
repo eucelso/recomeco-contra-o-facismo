@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import type { z } from "zod";
+import { MissingKeyError } from "@/lib/dossier-crypto";
+import { sealNotes } from "@/lib/dossier-server";
 import { createClient } from "@/lib/supabase/server";
 import { candidateStep1, candidateStep2, candidateStep3, candidateStep4 } from "@/lib/validation";
 
@@ -93,9 +95,16 @@ export async function finishOnboarding(input: z.input<typeof candidateStep4>, re
   if (resumePath && !resumePath.startsWith(`${uid}/`)) return { ok: false, error: "Arquivo inválido." };
 
   if (d.report) {
+    let sealed: string;
+    try {
+      sealed = sealNotes(uid, d.report);
+    } catch (e) {
+      if (e instanceof MissingKeyError) return { ok: false, error: "A criptografia do relato não está configurada. Avise a equipe." };
+      throw e;
+    }
     const { error } = await supabase
       .from("confidential_reports")
-      .upsert({ candidate_id: uid, body: d.report, consent_at: new Date().toISOString() });
+      .upsert({ candidate_id: uid, body: sealed, consent_at: new Date().toISOString() });
     if (error) return { ok: false, error: "Não conseguimos guardar o relato." };
   }
 

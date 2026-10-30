@@ -754,7 +754,7 @@ function Step4({ data, onBack }: { data: CandidateDraft; onBack: () => void }) {
                       <Checkbox checked={field.value} onCheckedChange={(v) => field.onChange(v === true)} className="mt-0.5 border-[#F2E8D5]" />
                     </FormControl>
                     <FormLabel className="text-sm font-medium normal-case leading-relaxed text-[#F2E8D5]">
-                      Autorizo guardar este relato só para meu uso. Posso apagá-lo a qualquer momento, e ele não é enviado a ninguém.
+                      Autorizo guardar este relato só para meu uso. Posso apagá-lo a qualquer momento. Ele só é enviado a alguém se eu escolher compartilhar com um advogado, e nunca a empresas.
                     </FormLabel>
                   </div>
                   <FormMessage className="text-[#FF8A9A]" />

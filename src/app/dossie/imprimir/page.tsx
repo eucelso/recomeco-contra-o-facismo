@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Logo } from "@/components/brand/fist";
 import { PrintButton } from "@/components/candidate/print-button";
 import { requireRole } from "@/lib/auth";
-import { sortFacts, type Fact } from "@/lib/dossier";
+import { sortFacts } from "@/lib/dossier";
+import { loadFacts, loadNotes } from "@/lib/dossier-server";
 
 export const metadata: Metadata = { title: "Dossiê para imprimir", robots: { index: false } };
 
@@ -11,12 +12,12 @@ const day = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString("pt-BR")
 
 export default async function DossieImprimirPage() {
   const { supabase, user } = await requireRole("candidate");
-  const [{ data: facts }, { data: report }, { data: me }] = await Promise.all([
-    supabase.from("report_facts").select("id,happened_on,place,who,what,evidence,witnesses,created_at").eq("candidate_id", user.id),
-    supabase.from("confidential_reports").select("body").eq("candidate_id", user.id).maybeSingle(),
+  const [{ facts }, notes, { data: me }] = await Promise.all([
+    loadFacts(supabase, user.id),
+    loadNotes(supabase, user.id),
     supabase.from("candidates").select("full_name").eq("id", user.id).maybeSingle(),
   ]);
-  const timeline = sortFacts((facts ?? []) as Fact[]);
+  const timeline = sortFacts(facts);
 
   return (
     <main id="conteudo" className="mx-auto min-h-dvh max-w-3xl bg-white px-5 py-8 text-[#141210] print:max-w-none print:p-0 print:pb-20 [-webkit-print-color-adjust:exact] [print-color-adjust:exact]">
@@ -76,10 +77,10 @@ export default async function DossieImprimirPage() {
         )}
       </section>
 
-      {report?.body && (
+      {notes && (
         <section className="mt-8">
           <h2 className="mb-3 text-lg font-black uppercase">Relato do trabalhador</h2>
-          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{report.body}</p>
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{notes}</p>
         </section>
       )}
 

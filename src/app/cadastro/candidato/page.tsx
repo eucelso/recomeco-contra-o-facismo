@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { CandidateWizard, type CandidateDraft } from "@/components/onboarding/candidate-wizard";
 import { requireRole } from "@/lib/auth";
+import { loadNotes } from "@/lib/dossier-server";
 
 export const metadata: Metadata = { title: "Seu cadastro" };
 
 export default async function CadastroCandidatoPage() {
   const { supabase, user } = await requireRole("candidate");
-  const [{ data: c }, { data: exps }, { data: report }] = await Promise.all([
+  const [{ data: c }, { data: exps }, notes] = await Promise.all([
     supabase.from("candidates").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("candidate_experiences").select("*").eq("candidate_id", user.id).order("position"),
-    supabase.from("confidential_reports").select("body").eq("candidate_id", user.id).maybeSingle(),
+    loadNotes(supabase, user.id),
   ]);
 
   const draft: CandidateDraft = {
@@ -38,7 +39,7 @@ export default async function CadastroCandidatoPage() {
     modalities: c?.modalities ?? [],
     contract_types: c?.contract_types ?? [],
     resume_path: c?.resume_path ?? null,
-    report: report?.body ?? "",
+    report: notes,
     anonymous: c?.anonymous ?? true,
     completed: Boolean(c?.completed_at),
   };

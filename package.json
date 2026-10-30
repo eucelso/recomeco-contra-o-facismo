@@ -10,7 +10,9 @@
     "db:types": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts",
     "link": "node --env-file=.env.local scripts/link-de-acesso.mjs",
     "cadastros": "node --env-file=.env.local scripts/cadastros-hoje.mjs",
-    "demo": "node --env-file=.env.local scripts/demo.mjs"
+    "demo": "node --env-file=.env.local scripts/demo.mjs",
+    "relatos:criptografar": "node --experimental-strip-types --env-file=.env.local scripts/criptografar-relatos.mjs",
+    "test:crypto": "node --experimental-strip-types tests/crypto-core.test.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.1",
