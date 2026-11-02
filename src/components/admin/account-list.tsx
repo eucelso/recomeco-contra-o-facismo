@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { deleteAccountAsAdmin, setSuspension } from "@/app/admin/contas/actions";
@@ -162,10 +163,12 @@ export function AccountList({ rows: all }: { rows: AccountRow[] }) {
       ) : (
         <ul className="flex flex-col gap-3 pr-1.5">
           {list.map((r) => (
-            <li key={r.id} className={`flex flex-col gap-2 border-3 border-foreground p-4 shadow-hard-sm ${r.suspended ? "bg-muted opacity-90" : "bg-card"}`}>
+            <li key={r.id} className={`relative flex flex-col gap-2 border-3 border-foreground p-4 shadow-hard-sm focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 hover:bg-accent/20 ${r.suspended ? "bg-muted opacity-90" : "bg-card"}`}>
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="flex min-w-0 flex-col">
-                  <strong className="text-base font-black leading-tight">{r.name}</strong>
+                  <Link href={`/admin/contas/${r.id}`} className="text-base font-black leading-tight after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">
+                    {r.name}
+                  </Link>
                   <span className="break-all text-[13px] font-semibold">{r.email}</span>
                 </div>
                 <Badge variant={VARIANT[r.status] ?? "dashed"}>{r.statusLabel}</Badge>
@@ -182,8 +185,11 @@ export function AccountList({ rows: all }: { rows: AccountRow[] }) {
                 <dt className="font-black uppercase">Último acesso</dt>
                 <dd>{r.last_sign_in_at ? date(r.last_sign_in_at) : "Nunca entrou"}</dd>
               </dl>
-              <SuspendControl row={r} />
-              <DeleteControl row={r} onDeleted={() => setGone((g) => new Set(g).add(r.id))} />
+              <span className="text-[13px] font-extrabold underline">Ver todos os detalhes →</span>
+              <div className="relative z-10 flex flex-col gap-2">
+                <SuspendControl row={r} />
+                <DeleteControl row={r} onDeleted={() => setGone((g) => new Set(g).add(r.id))} />
+              </div>
             </li>
           ))}
         </ul>
